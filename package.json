@@ -18,7 +18,9 @@
     "@sinclair/typebox": "^0.32.31",
     "bcrypt": "^5.1.1",
     "fastify": "^4.27.0",
-    "fastify-plugin": "^4.5.1"
+    "fastify-plugin": "^4.5.1",
+    "generate-unique-id": "^2.0.3",
+    "tsx": "^4.15.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
