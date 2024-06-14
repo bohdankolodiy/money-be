@@ -1,8 +1,12 @@
 import fastify from "fastify";
-import { authRoutes } from "./modules/auth/auth.route";
-import jwtPlugin from "./modules/auth/auth.decorator";
-import fastifyJwt, { FastifyJWT, JWT } from "@fastify/jwt";
+import { authRoutes } from "./modules/auth/routes/auth.route";
+import jwtPlugin from "./modules/auth/decorator/auth.decorator";
+import fastifyJwt, { JWT } from "@fastify/jwt";
 import { Transporter } from "nodemailer";
+import { fastifyPostgres } from "@fastify/postgres";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -27,6 +31,13 @@ server.register(require("fastify-mailer"), {
       pass: "FX1VUbNgvnUp17uWsa",
     },
   },
+});
+
+server.register(fastifyPostgres, {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  port: Number(process.env.DB_PORT!),
 });
 
 server.register(jwtPlugin);
