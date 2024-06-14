@@ -5,7 +5,7 @@ export const UserAuth = Type.Object({
   email: Type.String({ format: "email" }),
 });
 
-export const User = Type.Object({
+export const UserSchema = Type.Object({
   id: Type.String(),
   email: Type.String({ format: "email" }),
   password: Type.String(),
@@ -14,14 +14,19 @@ export const User = Type.Object({
   transactionsHistory: Type.Array(Type.Number()),
 });
 
-export type UserType = Static<typeof User>;
+export const UserEmailSchema = Type.Object({
+  email: Type.String({ format: "email" }),
+});
+
+export type UserType = Static<typeof UserSchema>;
 export type UserAuthType = Static<typeof UserAuth>;
+export type UserEmailType = Static<typeof UserEmailSchema>;
 
 export const userPostSchema = {
   schema: {
     body: UserAuth,
     response: {
-      200: User,
+      200: UserSchema,
     },
   },
 };

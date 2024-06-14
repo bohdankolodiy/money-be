@@ -6,5 +6,5 @@ export interface IUser {
   password: string;
   wallet: string;
   balance: number;
-  transactionsHistory: ITransactHistory[];
+  isVerify: boolean;
 }

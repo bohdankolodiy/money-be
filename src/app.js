@@ -11,9 +11,21 @@ const server = (0, fastify_1.default)();
 server.register(jwt_1.default, {
     secret: "supersecret",
 });
+server.register(require("fastify-mailer"), {
+    defaults: { from: "Destini Goodwin <destini46@ethereal.email>" },
+    transport: {
+        host: "smtp.ethereal.email",
+        port: 587,
+        auth: {
+            user: "destini46@ethereal.email",
+            pass: "FX1VUbNgvnUp17uWsa",
+        },
+    },
+});
 server.register(auth_decorator_1.default);
 server.addHook("preHandler", (req, res, next) => {
     req.jwt = server.jwt;
+    req.mailer = ("mailer" in server ? server.mailer : null);
     return next();
 });
 // routes

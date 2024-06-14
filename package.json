@@ -18,13 +18,16 @@
     "@sinclair/typebox": "^0.32.31",
     "bcrypt": "^5.1.1",
     "fastify": "^4.27.0",
+    "fastify-mailer": "^2.3.1",
     "fastify-plugin": "^4.5.1",
     "generate-unique-id": "^2.0.3",
+    "nodemailer": "^6.9.13",
     "tsx": "^4.15.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.14.2",
+    "@types/nodemailer": "^6.4.15",
     "typescript": "^5.4.5"
   }
 }
