@@ -10,7 +10,7 @@ export class User implements IUser {
     length: 16,
     useLetters: false,
   });
-  balance = 0;
+  balance = 0.0;
   isVerify: boolean = false;
 
   constructor(hash: string, email: string) {

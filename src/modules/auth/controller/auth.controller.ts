@@ -1,13 +1,21 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
-import { UserAuthType, UserEmailType } from "../schema/auth.schema";
+import { UserAuthType, UserIdType } from "../schema/auth.schema";
 import { User } from "../../../models/user.model";
 
 import { IUser } from "../../../interfaces/user.interface";
-import { AuthService } from "../service/auth.service";
+import { authService } from "../service/auth.service";
+import { PoolClient } from "pg";
 
-export class AuthController {
-  async createUser(
+class AuthController {
+  // possible solution with db connecion;
+  private _pg: PoolClient | undefined;
+
+  constructor(db?: PoolClient) {
+    this._pg = db;
+  }
+
+  async registerUser(
     req: FastifyRequest<{
       Body: UserAuthType;
     }>,
@@ -19,7 +27,15 @@ export class AuthController {
       const hash = await bcrypt.hash(password, +process.env.SECRET_KEY!);
       const user: IUser = new User(hash, email);
 
-      await AuthService.prototype.sendMail(req.mailer, email, reply);
+      const userId = (await authService.createUser(req.db!, user))?.id;
+
+      if (!userId) {
+        reply
+          .code(500)
+          .send({ message: "Smth went wrong... User wasnot created" });
+      }
+
+      await authService.sendMail(req.mailer, user);
 
       return reply.code(201).send({ message: "success" });
     } catch (e) {
@@ -27,7 +43,7 @@ export class AuthController {
     }
   }
 
-  async LoginUser(
+  async loginUser(
     req: FastifyRequest<{
       Body: UserAuthType;
     }>,
@@ -35,14 +51,17 @@ export class AuthController {
   ) {
     try {
       const { email, password } = req.body;
-      const user: IUser = new User("dsfdsfsdfs", email);
+
+      const user: IUser = await authService.findOne(req.db, email);
+
+      if (!user)
+        return reply.code(401).send({ message: "Invalid email or password" });
       const isMatch = await bcrypt.compare(password, user.password);
 
-      if (!user || !isMatch) {
+      if (!isMatch)
         return reply.code(401).send({
           message: "Invalid email or password",
         });
-      }
 
       const payload = {
         id: user.id,
@@ -59,15 +78,14 @@ export class AuthController {
 
   async verifyUser(
     req: FastifyRequest<{
-      Body: UserEmailType;
+      Body: UserIdType;
     }>,
     reply: FastifyReply
   ) {
     try {
-      const { email } = req.body;
-      const user: IUser = new User("dsfsdf", email);
+      const { id } = req.body;
 
-      user.isVerify = true;
+      await authService.verifyUser(req.db, id);
 
       return reply.code(201).send({ message: "success" });
     } catch (e) {
@@ -75,3 +93,5 @@ export class AuthController {
     }
   }
 }
+
+export const authController = new AuthController();

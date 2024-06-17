@@ -3,19 +3,19 @@ import { authRoutes } from "./modules/auth/routes/auth.route";
 import jwtPlugin from "./modules/auth/decorator/auth.decorator";
 import fastifyJwt, { JWT } from "@fastify/jwt";
 import { Transporter } from "nodemailer";
-import { fastifyPostgres } from "@fastify/postgres";
+import { PostgresDb, fastifyPostgres } from "@fastify/postgres";
 import * as dotenv from "dotenv";
-
-dotenv.config();
 
 declare module "fastify" {
   interface FastifyRequest {
     jwt: JWT;
     mailer: Transporter;
+    db: PostgresDb;
   }
 }
 
 const server = fastify();
+dotenv.config();
 
 server.register(fastifyJwt, {
   secret: "supersecret",
@@ -45,6 +45,7 @@ server.register(jwtPlugin);
 server.addHook("preHandler", (req, res, next) => {
   req.jwt = server.jwt;
   req.mailer = ("mailer" in server ? server.mailer : null) as Transporter;
+  req.db = server.pg;
 
   return next();
 });

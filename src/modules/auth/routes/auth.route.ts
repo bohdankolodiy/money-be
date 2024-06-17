@@ -1,15 +1,14 @@
 import { FastifyError, FastifyInstance } from "fastify";
-import { userPostSchema } from "../schema/auth.schema";
-import { AuthController } from "../controller/auth.controller";
+import {
+  userLoginSchema,
+  userRegisterSchema,
+  userVerifySchema,
+} from "../schema/auth.schema";
+import { authController } from "../controller/auth.controller";
 
-export async function authRoutes(
-  app: FastifyInstance,
-  opt: any,
-  done: (err?: FastifyError) => void
-) {
-  app.post("/register", userPostSchema, new AuthController().createUser);
-  app.post("/login", () => {});
+export async function authRoutes(app: FastifyInstance) {
+  app.post("/register", userRegisterSchema, authController.registerUser);
+  app.post("/login", userLoginSchema, authController.loginUser);
+  app.post("/verifyUser", userVerifySchema, authController.verifyUser);
   app.delete("/logout", () => {});
-
-  done();
 }

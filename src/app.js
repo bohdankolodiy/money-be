@@ -22,15 +22,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -61,26 +52,15 @@ server.register(postgres_1.fastifyPostgres, {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
-    port: 5432,
+    port: Number(process.env.DB_PORT),
 });
 server.register(auth_decorator_1.default);
 server.addHook("preHandler", (req, res, next) => {
     req.jwt = server.jwt;
     req.mailer = ("mailer" in server ? server.mailer : null);
+    req.db = server.pg;
     return next();
 });
-server.get("/user", (req, reply) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const client = yield server.pg.connect();
-        // const { rows } = await client.query(
-        //   "SELECT * FROM users"
-        // );
-        console.log(yield client.query("SELECT * FROM users"));
-    }
-    catch (e) {
-        console.log(e);
-    }
-}));
 // routes
 server.register(auth_route_1.authRoutes, { prefix: "api/v1/auth" });
 server.listen({ port: 3000 }, (err, address) => {

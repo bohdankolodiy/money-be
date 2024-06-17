@@ -14,19 +14,46 @@ export const UserSchema = Type.Object({
   transactionsHistory: Type.Array(Type.Number()),
 });
 
-export const UserEmailSchema = Type.Object({
-  email: Type.String({ format: "email" }),
+export const UserIdSchema = Type.Object({
+  id: Type.String(),
+});
+
+export const UserTokenSchema = Type.Object({
+  accessToken: Type.String(),
+});
+
+export const UserDefaultSchema = Type.Object({
+  message: Type.String(),
 });
 
 export type UserType = Static<typeof UserSchema>;
 export type UserAuthType = Static<typeof UserAuth>;
-export type UserEmailType = Static<typeof UserEmailSchema>;
+export type UserIdType = Static<typeof UserIdSchema>;
+export type TokenType = Static<typeof UserTokenSchema>;
 
-export const userPostSchema = {
+export const userRegisterSchema = {
   schema: {
     body: UserAuth,
     response: {
-      200: UserSchema,
+      201: UserDefaultSchema,
+    },
+  },
+};
+
+export const userLoginSchema = {
+  schema: {
+    body: UserAuth,
+    response: {
+      200: UserTokenSchema,
+    },
+  },
+};
+
+export const userVerifySchema = {
+  schema: {
+    body: UserIdSchema,
+    response: {
+      200: UserDefaultSchema,
     },
   },
 };
