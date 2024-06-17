@@ -1,17 +1,21 @@
 import fastify from "fastify";
-import { authRoutes } from "./modules/auth/auth.route";
-import jwtPlugin from "./modules/auth/auth.decorator";
-import fastifyJwt, { FastifyJWT, JWT } from "@fastify/jwt";
+import { authRoutes } from "./modules/auth/routes/auth.route";
+import jwtPlugin from "./modules/auth/decorator/auth.decorator";
+import fastifyJwt, { JWT } from "@fastify/jwt";
 import { Transporter } from "nodemailer";
+import { PostgresDb, fastifyPostgres } from "@fastify/postgres";
+import * as dotenv from "dotenv";
 
 declare module "fastify" {
   interface FastifyRequest {
     jwt: JWT;
     mailer: Transporter;
+    db: PostgresDb;
   }
 }
 
 const server = fastify();
+dotenv.config();
 
 server.register(fastifyJwt, {
   secret: "supersecret",
@@ -29,11 +33,19 @@ server.register(require("fastify-mailer"), {
   },
 });
 
+server.register(fastifyPostgres, {
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  port: Number(process.env.DB_PORT!),
+});
+
 server.register(jwtPlugin);
 
 server.addHook("preHandler", (req, res, next) => {
   req.jwt = server.jwt;
   req.mailer = ("mailer" in server ? server.mailer : null) as Transporter;
+  req.db = server.pg;
 
   return next();
 });
