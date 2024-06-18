@@ -1,12 +1,15 @@
 import fastify from "fastify";
 import { authRoutes } from "./modules/auth/routes/auth.route";
-import jwtPlugin from "./modules/auth/decorator/auth.decorator";
+import { VerifyToken } from "./modules/auth/decorator/auth.decorator";
 import fastifyJwt, { JWT } from "@fastify/jwt";
 import { Transporter } from "nodemailer";
 import { PostgresDb, fastifyPostgres } from "@fastify/postgres";
 import * as dotenv from "dotenv";
 
 declare module "fastify" {
+  interface FastifyInstance {
+    authenticate: any;
+  }
   interface FastifyRequest {
     jwt: JWT;
     mailer: Transporter;
@@ -40,7 +43,7 @@ server.register(fastifyPostgres, {
   port: Number(process.env.DB_PORT!),
 });
 
-server.register(jwtPlugin);
+server.decorate("authenticate", VerifyToken);
 
 server.addHook("preHandler", (req, res, next) => {
   req.jwt = server.jwt;
