@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc -p src/tsconfig.json",
     "dev": "tsx watch src/app.ts",
-    "start": "npm run build && node src/app.js"
+    "start": "npm run build && node src/app.js",
+    "lint:ci": "eslint \"**/*.{ts,tsx}\"",
+    "build:ci": "webpack"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,12 @@
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^20.14.2",
-    "typescript": "^5.4.5"
+    "@typescript-eslint/eslint-plugin": "^7.13.1",
+    "@typescript-eslint/parser": "^7.13.1",
+    "eslint": "8.57",
+    "globals": "^15.6.0",
+    "typescript-eslint": "^7.13.1",
+    "webpack": "^5.92.0",
+    "webpack-cli": "^5.1.4"
   }
 }
