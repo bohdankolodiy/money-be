@@ -4,13 +4,12 @@
   "description": "My webpack project",
   "main": "app.js",
   "scripts": {
-    "build": "webpack --mode=production --node-env=production",
+    "build": "npm run build:ts && webpack",
     "dev": "tsx watch src/app.ts",
     "start": "npm run dev && node src/app.js",
     "lint:ci": "eslint \"**/*.{ts,tsx}\"",
-    "build:ci": "tsc -p tsconfig.json && webpack --mode=development --node-env=development --stats-error-details",
-    "build:dev": "webpack --mode=development",
-    "build:prod": "webpack --mode=production --node-env=production",
+    "build:ts": "tsc -p tsconfig.json",
+    "build:ci": "tsc -p tsconfig.json && webpack",
     "watch": "webpack --watch",
     "serve": "webpack serve"
   },
@@ -23,18 +22,15 @@
     "@fastify/postgres": "^5.2.2",
     "@fastify/type-provider-typebox": "^4.0.0",
     "@sinclair/typebox": "^0.32.31",
-    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "fastify": "^4.27.0",
     "fastify-mailer": "^2.3.1",
     "fastify-plugin": "^4.5.1",
     "generate-unique-id": "^2.0.3",
-    "html-loader": "^5.0.0",
-    "html-webpack-plugin": "^5.6.0",
-    "node-polyfill-webpack-plugin": "^4.0.0",
     "nodemailer": "^6.9.13",
     "pg": "^8.12.0",
-    "tsx": "^4.15.2"
+    "tsx": "^4.15.2",
+    "webpack-dev-server": "^5.0.4"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
@@ -43,7 +39,7 @@
     "@types/pg": "^8.11.6",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
-    "@webpack-cli/generators": "^3.0.7",
+    "bcrypt": "^5.1.1",
     "eslint": "8.57",
     "globals": "^15.6.0",
     "prettier": "^3.3.2",
@@ -51,7 +47,6 @@
     "typescript": "^5.4.5",
     "typescript-eslint": "^7.13.1",
     "webpack": "^5.92.0",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^5.0.4"
+    "webpack-cli": "^5.1.4"
   }
 }
