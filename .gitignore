@@ -11,5 +11,5 @@
 /node_modules
 
 #js files
-
-.js
+/src/*.js
+*.js
