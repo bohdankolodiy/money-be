@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 export async function VerifyToken(
   request: FastifyRequest,
   reply: FastifyReply
-): Promise<any> {
+) {
   try {
     const token = request.headers.authorization;
     if (!token) {

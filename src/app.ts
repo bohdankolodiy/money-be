@@ -8,6 +8,7 @@ import * as dotenv from "dotenv";
 
 declare module "fastify" {
   interface FastifyInstance {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     authenticate: any;
   }
   interface FastifyRequest {
@@ -24,6 +25,7 @@ server.register(fastifyJwt, {
   secret: "supersecret",
 });
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 server.register(require("fastify-mailer"), {
   defaults: { from: "Destini Goodwin <destini46@ethereal.email>" },
   transport: {

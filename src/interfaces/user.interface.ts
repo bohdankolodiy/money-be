@@ -1,5 +1,3 @@
-import { ITransactHistory } from "./history.interface";
-
 export interface IUser {
   id: string;
   email: string;

@@ -1,4 +1,4 @@
-import { FastifyError, FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import {
   userLoginSchema,
   userRegisterSchema,

@@ -56,6 +56,7 @@ class AuthController {
 
       if (!user)
         return reply.code(401).send({ message: "Invalid email or password" });
+
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch)
