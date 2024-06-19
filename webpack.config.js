@@ -32,6 +32,7 @@ const config = {
         test: /\.(ts|tsx)$/i,
         loader: "ts-loader",
         exclude: [
+          /\/node_modules/,
           path.resolve(__dirname, "node_modules"),
           path.resolve(__dirname, "../node_modules"),
           /\.js$/,
@@ -55,6 +56,9 @@ const config = {
     nock: "commonjs nock",
     "mock-aws-s3": "commonjs mock-aws-s3",
     "node-gyp": "commonjs node-gyp",
+    "node-pre-gyp": "commonjs node-pre-gyp",
+    "mapbox": "commonjs @mapbox",
+    "npm": "commonjs npm",
 
     // Add other modules as needed
   },
