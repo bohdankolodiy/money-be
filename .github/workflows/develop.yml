@@ -38,4 +38,5 @@ jobs:
 
       - name: npm run Lint command
         run: |
+          npm i
           npm run lint:ci

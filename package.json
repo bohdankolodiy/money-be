@@ -8,7 +8,7 @@
     "dev": "tsx watch src/app.ts",
     "start": "npm run dev && node src/app.js",
     "lint:ci": "eslint \"**/*.{ts,tsx}\"",
-    "build:ci": "webpack --mode=development --node-env=development --stats-error-details",
+    "build:ci": "tsc -p tsconfig.json && webpack --mode=development --node-env=development --stats-error-details",
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
     "watch": "webpack --watch",
