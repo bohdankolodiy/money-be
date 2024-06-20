@@ -4,5 +4,5 @@ export interface IUser {
   password: string;
   wallet: string;
   balance: number;
-  isVerify: boolean;
+  isverify: boolean;
 }

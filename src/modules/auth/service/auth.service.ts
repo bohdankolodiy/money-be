@@ -9,14 +9,14 @@ class AuthService {
   async createUser(db: PostgresDb, data: IUser): Promise<{ id: string }> {
     return (
       await db.query(
-        `INSERT INTO users(id, email, password, wallet, balance, isVerify) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+        `INSERT INTO users(id, email, password, wallet, balance, isverify) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
         [
           data.id,
           data.email,
           data.password,
           data.wallet,
           data.balance,
-          data.isVerify,
+          data.isverify,
         ]
       )
     ).rows[0];
@@ -28,11 +28,11 @@ class AuthService {
   }
 
   async verifyUser(db: PostgresDb, userId: string): Promise<QueryResult> {
-    return db.query(`Update users Set isVerify = true where id=$1`, [userId]);
+    return db.query(`Update users Set isverify = true where id=$1`, [userId]);
   }
 
   sendMail(mailer: Transporter, user: IUser): Promise<undefined> {
-    const varificationLink = `http://localhost:4200/callback?id=${user.id}`;
+    const varificationLink = `http://localhost:4200/veification?id=${user.id}`;
     const html = `<b>Hi, from Money Inc</b> <br>
         <p>Please click at link for verification you email:</p> <br>
         <a href="${varificationLink}">${varificationLink}</a>`;

@@ -24,13 +24,23 @@ class AuthController {
     try {
       const { password, email } = req.body;
 
+      const isExist: boolean = Boolean(
+        await authService.findOne(req.db, email)
+      );
+
+      if (isExist) {
+        return reply.code(401).send({
+          message: "User already exist. Please login or verify you email!!!",
+        });
+      }
+
       const hash = await bcrypt.hash(password, +process.env.SECRET_KEY!);
       const user: IUser = new User(hash, email);
 
       const userId = (await authService.createUser(req.db!, user))?.id;
 
       if (!userId) {
-        reply
+        return reply
           .code(500)
           .send({ message: "Smth went wrong... User wasnot created" });
       }
@@ -62,6 +72,13 @@ class AuthController {
       if (!isMatch)
         return reply.code(401).send({
           message: "Invalid email or password",
+        });
+
+      console.log(user);
+
+      if (!user.isverify)
+        return reply.code(401).send({
+          message: "Verify you email",
         });
 
       const payload = {
