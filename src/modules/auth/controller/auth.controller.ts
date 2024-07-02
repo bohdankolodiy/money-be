@@ -34,7 +34,7 @@ class AuthController {
         });
       }
 
-      const hash = await bcrypt.hash(password, +process.env.SECRET_KEY!);
+      const hash = await bcrypt.hash(password, process.env.SECRET_KEY!);
       const user: IUser = new User(hash, email);
 
       const userId = (await authService.createUser(req.db!, user))?.id;
@@ -73,8 +73,6 @@ class AuthController {
         return reply.code(401).send({
           message: "Invalid email or password",
         });
-
-      console.log(user);
 
       if (!user.isverify)
         return reply.code(401).send({

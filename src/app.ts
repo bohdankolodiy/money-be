@@ -1,5 +1,7 @@
 import fastify from "fastify";
 import { authRoutes } from "./modules/auth/routes/auth.route";
+import { userRoutes } from "./modules/user/routes/user.route";
+import { historyRoutes } from "./modules/history/routes/history.route";
 import { VerifyToken } from "./modules/auth/decorator/auth.decorator";
 import fastifyJwt, { JWT } from "@fastify/jwt";
 import { Transporter } from "nodemailer";
@@ -57,6 +59,8 @@ server.addHook("preHandler", (req, res, next) => {
 
 // routes
 server.register(authRoutes, { prefix: "api/v1/auth" });
+server.register(userRoutes, { prefix: "api/v1/user" });
+server.register(historyRoutes, { prefix: "api/v1/history" });
 
 server.listen({ port: 3000 }, (err, address) => {
   if (err) {
