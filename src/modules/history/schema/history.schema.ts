@@ -10,6 +10,7 @@ export const HistorySchema = Type.Object({
   comment: Type.String() || Type.Null(),
   card: Type.String() || Type.Null(),
   wallet: Type.String() || Type.Null(),
+  transactid: Type.String() || Type.Null(),
 });
 
 export const HistoryResponseSchema = Type.Array(

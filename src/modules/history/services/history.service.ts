@@ -3,6 +3,7 @@ import {
   ITransactHistory,
   ITransformHistory,
 } from "../../../interfaces/history.interface";
+import { ITransaction } from "../../../interfaces/transact.interface";
 
 class HistoryService {
   async getAllHistory(
@@ -62,7 +63,7 @@ class HistoryService {
   ): Promise<{ id: string }> {
     return (
       await db.query(
-        "INSERT INTO history(id, amount, action, userId, status, date, card, wallet) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING ID",
+        "INSERT INTO history(id, amount, action, userId, status, date, card, wallet, transactid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING ID",
         [
           body.id,
           body.amount,
@@ -72,6 +73,7 @@ class HistoryService {
           body.date,
           body.card,
           body.wallet,
+          body.transactid,
         ]
       )
     ).rows[0];
@@ -79,21 +81,56 @@ class HistoryService {
 
   async updateHistoryStatus(
     db: PostgresDb,
-    userId: string,
-    recieverId: string,
-    status: string,
-    date: string
+    transactid: string,
+    status: string
   ): Promise<unknown> {
     return await db.transact(async () => {
-      await db.query(
-        `Update history set status = $1 where userid = $2 and date = $3`,
-        [status, userId, date]
-      );
-      await db.query(
-        `Update history set status = $1 where userid = $2 and date = $3`,
-        [status, recieverId, date]
-      );
+      await db.query(`Update history set status = $1 where transactid = $2`, [
+        status,
+        transactid,
+      ]);
+      await db.query(`Update history set status = $1 where transactid = $2`, [
+        status,
+        transactid,
+      ]);
+
+      await db.query(`Update transactions set status = $1 where id = $2`, [
+        status,
+        transactid,
+      ]);
     });
+  }
+
+  async updateHistoryTransactionId(
+    db: PostgresDb,
+    transactid: string,
+    senderHistoryId: string,
+    recieverHistoryId: string
+  ): Promise<unknown> {
+    return await db.transact(async () => {
+      await db.query(`Update history set transactid = $1 where id = $2`, [
+        transactid,
+        senderHistoryId,
+      ]);
+      await db.query(`Update history set transactid = $1 where id = $2`, [
+        transactid,
+        recieverHistoryId,
+      ]);
+    });
+  }
+
+  async createTransaction(
+    db: PostgresDb,
+    body: ITransaction
+  ): Promise<{ id: string }> {
+    console.log(body);
+
+    return (
+      await db.query(
+        "INSERT INTO transactions(id, recieverid, senderid, amount, status) VALUES ($1, $2, $3, $4, $5) RETURNING ID",
+        [body.id, body.recieverid, body.senderid, body.amount, body.status]
+      )
+    ).rows[0];
   }
 }
 

@@ -7,7 +7,6 @@ import {
   TransferType,
   UpdateStatusType,
 } from "../schema/user.schema";
-import { History } from "../../../models/history.model";
 
 class UserController {
   user: Omit<IUser, "password"> | null = null;
@@ -38,36 +37,29 @@ class UserController {
       if (error) return reply.code(400).send({ message: error });
 
       const reciever = await userService.findOneByWallet(req.db, wallet);
+
       if (!reciever)
         return reply
           .code(400)
           .send({ message: "No reciever with that wallet" });
 
-      const userInfo: Omit<IInfo, "amount"> = {
-        id: userController.user.id,
-        history: new History(
-          -amount,
-          "payment",
+      const userInfo: Omit<IInfo, "amount"> =
+        userService.generateTransactionInfo(
           userController.user.id,
-          MoneyStatus.Pending,
+          "payment",
+          -amount,
           comment,
-          null,
           wallet
-        ),
-      };
+        );
 
-      const recieverInfo: Omit<IInfo, "amount"> = {
-        id: reciever.id,
-        history: new History(
-          amount,
-          "income",
+      const recieverInfo: Omit<IInfo, "amount"> =
+        userService.generateTransactionInfo(
           reciever.id,
-          MoneyStatus.Pending,
+          "income",
+          amount,
           comment,
-          null,
           userController.user.wallet
-        ),
-      };
+        );
 
       await userService.transactionPayment(req.db, userInfo, recieverInfo);
 
@@ -94,18 +86,13 @@ class UserController {
 
       const newUserAmount = userController.user!.balance + amount;
 
-      const userInfo: IInfo = {
-        id: userController.user.id,
-        amount: newUserAmount,
-        history: new History(
-          amount,
-          "deposit",
-          userController.user.id,
-          MoneyStatus.Success,
-          "",
-          card
-        ),
-      };
+      const userInfo: IInfo = userService.generateTransferInfo(
+        userController.user.id,
+        "deposit",
+        amount,
+        newUserAmount,
+        card
+      );
 
       await userService.transactionTransfer(req.db, userInfo);
 
@@ -136,18 +123,13 @@ class UserController {
 
       const newUserAmount = userController.user!.balance - amount;
 
-      const userInfo: IInfo = {
-        id: userController.user.id,
-        amount: newUserAmount,
-        history: new History(
-          -amount,
-          "withdrawal",
-          userController.user.id,
-          MoneyStatus.Success,
-          "",
-          card
-        ),
-      };
+      const userInfo: IInfo = userService.generateTransferInfo(
+        userController.user.id,
+        "withdrawal",
+        -amount,
+        newUserAmount,
+        card
+      );
 
       await userService.transactionTransfer(req.db, userInfo);
 
@@ -165,16 +147,16 @@ class UserController {
     reply: FastifyReply
   ) {
     try {
-      const { status, wallet, amount, date } = req.body;
+      const { status, wallet, amount, transactid } = req.body;
+      const reciever = await userService.findOneByWallet(req.db, wallet);
 
       if (!userController.user)
         userController.user = await userService.getAuthUser(req);
 
-      const reciever = await userService.findOneByWallet(req.db, wallet);
       if (!reciever)
         return reply.code(400).send({ message: "No reciever with that id" });
 
-      const newUserAmount =
+      const senderNewBalance =
         status === MoneyStatus.Success
           ? userController.user!.balance + Math.abs(amount)
           : userController.user!.balance;
@@ -184,9 +166,9 @@ class UserController {
           ? reciever!.balance - Math.abs(amount)
           : reciever!.balance;
 
-      const userInfo: Omit<IInfo, "history"> = {
+      const senderInfo: Omit<IInfo, "history"> = {
         id: userController.user.id,
-        amount: newUserAmount,
+        amount: senderNewBalance,
       };
 
       const recieverInfo: Omit<IInfo, "history"> = {
@@ -196,10 +178,10 @@ class UserController {
 
       await userService.transactionUpdatePayment(
         req.db,
-        userInfo,
+        senderInfo,
         recieverInfo,
-        status,
-        date
+        transactid,
+        status
       );
 
       return reply.code(200).send();
