@@ -37,9 +37,12 @@ class UserService {
     return this.getUserById(req.db, decodedId);
   }
 
-  async getUserId(req: FastifyRequest): Promise<string> {
-    const token = req.headers.authorization!.split(" ")[1];
-    const decodeToken: IToken | null = await req.jwt.decode(token);
+  async getUserId(
+    req: FastifyRequest,
+    token: string = req.headers.authorization!
+  ): Promise<string> {
+    const splitToken = token.split(" ")[1] ?? token;
+    const decodeToken: IToken | null = await req.jwt.decode(splitToken);
     return decodeToken?.id ?? "";
   }
 

@@ -1,20 +1,18 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import bcrypt from "bcrypt";
-import { UserAuthType, UserIdType } from "../schema/auth.schema";
+import {
+  ForgetPasswordType,
+  ResetPasswordType,
+  UserAuthType,
+  UserIdType,
+} from "../schema/auth.schema";
 import { User } from "../../../models/user.model";
-
 import { IUser } from "../../../interfaces/user.interface";
 import { authService } from "../service/auth.service";
-import { PoolClient } from "pg";
+import { MailTypes } from "../../../enums/mail.enum";
+import { userService } from "../../user/services/user.service";
 
 class AuthController {
-  // possible solution with db connecion;
-  private _pg: PoolClient | undefined;
-
-  constructor(db?: PoolClient) {
-    this._pg = db;
-  }
-
   async registerUser(
     req: FastifyRequest<{
       Body: UserAuthType;
@@ -34,7 +32,7 @@ class AuthController {
         });
       }
 
-      const hash = await bcrypt.hash(password, process.env.SECRET_KEY!);
+      const hash = await authController.generateHashPassword(password);
       const user: IUser = new User(hash, email);
 
       const userId = (await authService.createUser(req.db!, user))?.id;
@@ -45,7 +43,7 @@ class AuthController {
           .send({ message: "Smth went wrong... User wasnot created" });
       }
 
-      await authService.sendMail(req.mailer, user);
+      await authService.sendMail(req.mailer, user, MailTypes.verification);
 
       return reply.code(201).send({ message: "success" });
     } catch (e) {
@@ -79,12 +77,7 @@ class AuthController {
           message: "Verify you email",
         });
 
-      const payload = {
-        id: user.id,
-        email: user.email,
-      };
-
-      const token = req.jwt.sign(payload);
+      const token = authController.signToken(req, user);
 
       return reply.code(201).send({ accessToken: token });
     } catch (e) {
@@ -107,6 +100,72 @@ class AuthController {
     } catch (e) {
       return reply.code(500).send(e);
     }
+  }
+
+  async forgetPassword(
+    req: FastifyRequest<{
+      Body: ForgetPasswordType;
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { email } = req.body;
+
+      const user = await authService.findOne(req.db, email);
+      if (!user) return reply.code(400).send({ message: "User not found" });
+
+      const token = authController.signToken(req, user);
+      await authService.sendMail(
+        req.mailer,
+        user,
+        MailTypes.resetPassword,
+        token
+      );
+
+      return reply.code(201).send({ message: "success" });
+    } catch (e) {
+      return reply.code(500).send(e);
+    }
+  }
+
+  async resetPassword(
+    req: FastifyRequest<{
+      Body: ResetPasswordType;
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { token, password } = req.body;
+
+      if (!token) return reply.code(400).send({ message: "Token is required" });
+
+      if (!req.jwt.verify(token))
+        return reply.code(400).send({ message: "Wrong token" });
+
+      const userId: string = await userService.getUserId(req, token);
+
+      const hash = await authController.generateHashPassword(password);
+
+      const user = await authService.updatePassword(req.db, userId, hash);
+      if (!user) return reply.code(400).send({ message: "User not found" });
+
+      return reply.code(201).send({ message: "success" });
+    } catch (e) {
+      return reply.code(500).send(e);
+    }
+  }
+
+  async generateHashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, Number(process.env.SECRET_KEY!));
+  }
+
+  signToken(req: FastifyRequest, user: IUser): string {
+    const payload = {
+      id: user.id,
+      email: user.email,
+    };
+
+    return req.jwt.sign(payload);
   }
 }
 
