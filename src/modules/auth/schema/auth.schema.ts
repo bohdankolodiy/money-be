@@ -1,11 +1,20 @@
 import { Static, Type } from "@sinclair/typebox";
 
-export const UserAuth = Type.Object({
+export const UserAuthObject = Type.Object({
   password: Type.String(),
   email: Type.String({ format: "email" }),
 });
 
-export const UserSchema = Type.Object({
+export const forgetPasswordObject = Type.Object({
+  email: Type.String({ format: "email" }),
+});
+
+export const resetPasswordObject = Type.Object({
+  password: Type.String(),
+  token: Type.String(),
+});
+
+export const UserObject = Type.Object({
   id: Type.String(),
   email: Type.String({ format: "email" }),
   password: Type.String(),
@@ -14,46 +23,66 @@ export const UserSchema = Type.Object({
   transactionsHistory: Type.Array(Type.Number()),
 });
 
-export const UserIdSchema = Type.Object({
+export const UserIdObject = Type.Object({
   id: Type.String(),
 });
 
-export const UserTokenSchema = Type.Object({
+export const UserTokenObject = Type.Object({
   accessToken: Type.String(),
 });
 
-export const UserDefaultSchema = Type.Object({
+export const UserDefaultObject = Type.Object({
   message: Type.String(),
 });
 
-export type UserType = Static<typeof UserSchema>;
-export type UserAuthType = Static<typeof UserAuth>;
-export type UserIdType = Static<typeof UserIdSchema>;
-export type TokenType = Static<typeof UserTokenSchema>;
+export type UserType = Static<typeof UserObject>;
+export type UserAuthType = Static<typeof UserAuthObject>;
+export type UserIdType = Static<typeof UserIdObject>;
+export type TokenType = Static<typeof UserTokenObject>;
+export type ForgetPasswordType = Static<typeof forgetPasswordObject>;
+export type ResetPasswordType = Static<typeof resetPasswordObject>;
 
 export const userRegisterSchema = {
   schema: {
-    body: UserAuth,
+    body: UserAuthObject,
     response: {
-      201: UserDefaultSchema,
+      201: UserDefaultObject,
     },
   },
 };
 
 export const userLoginSchema = {
   schema: {
-    body: UserAuth,
+    body: UserAuthObject,
     response: {
-      200: UserTokenSchema,
+      200: UserTokenObject,
     },
   },
 };
 
 export const userVerifySchema = {
   schema: {
-    body: UserIdSchema,
+    body: UserIdObject,
     response: {
-      200: UserDefaultSchema,
+      200: UserDefaultObject,
+    },
+  },
+};
+
+export const forgetPasswordSchema = {
+  schema: {
+    body: forgetPasswordObject,
+    response: {
+      200: UserDefaultObject,
+    },
+  },
+};
+
+export const resetPasswordSchema = {
+  schema: {
+    body: resetPasswordObject,
+    response: {
+      200: UserDefaultObject,
     },
   },
 };

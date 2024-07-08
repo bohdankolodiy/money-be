@@ -8,6 +8,7 @@ export interface ITransactHistory {
   comment?: string | null;
   card?: string | null;
   wallet?: string | null;
+  transactid?: string | null;
 }
 
 export interface ITransformHistory {

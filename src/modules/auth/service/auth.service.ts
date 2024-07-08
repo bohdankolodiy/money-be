@@ -2,6 +2,7 @@ import { IEmailTemplate } from "../../../interfaces/email.interface";
 import { EmailTemplate } from "../../../models/email.model";
 import { Transporter } from "nodemailer";
 import { IUser } from "../../../interfaces/user.interface";
+import { MailText, MailTypes } from "../../../enums/mail.enum";
 import { QueryResult } from "pg";
 import { PostgresDb } from "@fastify/postgres";
 
@@ -27,19 +28,46 @@ class AuthService {
       .rows[0];
   }
 
+  async updatePassword(
+    db: PostgresDb,
+    userId: string,
+    password: string
+  ): Promise<QueryResult> {
+    return await db.query(`Update users Set password = $1 where id=$2`, [
+      password,
+      userId,
+    ]);
+  }
+
   async verifyUser(db: PostgresDb, userId: string): Promise<QueryResult> {
     return db.query(`Update users Set isverify = true where id=$1`, [userId]);
   }
 
-  sendMail(mailer: Transporter, user: IUser): Promise<undefined> {
-    const varificationLink = `http://localhost:4200/veification?id=${user.id}`;
+  sendMail(
+    mailer: Transporter,
+    user: IUser,
+    type: string,
+    token?: string
+  ): Promise<undefined> {
+    let link = `http://localhost:4200/`;
+
+    switch (type) {
+      case MailTypes.resetPassword as string:
+        if (!token) throw new Error("Smth go wrong");
+        link += MailTypes.resetPassword + `?token=${token}`;
+        break;
+
+      default:
+        link += MailTypes.verification + `?id=${user.id}`;
+        break;
+    }
     const html = `<b>Hi, from Money Inc</b> <br>
-        <p>Please click at link for verification you email:</p> <br>
-        <a href="${varificationLink}">${varificationLink}</a>`;
+        <p>${MailText[type as keyof typeof MailText]}:</p> <br>
+        <a href="${link}">${link}</a>`;
     const mail: IEmailTemplate = new EmailTemplate(
       user.email,
-      "Varification Link",
-      varificationLink,
+      `${type} Link`,
+      link,
       html
     );
 
