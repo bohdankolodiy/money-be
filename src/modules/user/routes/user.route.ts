@@ -5,6 +5,7 @@ import {
   transferMoneySchema,
   transactMoneySchema,
   updatePaymentStatusSchema,
+  getUsersSchema,
 } from "../schema/user.schema";
 
 export async function userRoutes(app: FastifyInstance) {
@@ -15,6 +16,14 @@ export async function userRoutes(app: FastifyInstance) {
       ...getUserSchema,
     },
     userController.getUser
+  );
+  app.get(
+    "/all",
+    {
+      preHandler: [app.authenticate],
+      ...getUsersSchema,
+    },
+    userController.getUsers
   );
   app.put(
     "/transact",

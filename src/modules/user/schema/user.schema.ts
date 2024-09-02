@@ -7,6 +7,8 @@ export const UserSchema = Type.Object({
   balance: Type.Number(),
 });
 
+export const UsersSchema = Type.Array(UserSchema);
+
 export const TransactSchema = Type.Object({
   wallet: Type.String(),
   comment: Type.String(),
@@ -37,6 +39,14 @@ export const getUserSchema = {
   schema: {
     response: {
       200: UserSchema,
+    },
+  },
+};
+
+export const getUsersSchema = {
+  schema: {
+    response: {
+      200: UsersSchema,
     },
   },
 };

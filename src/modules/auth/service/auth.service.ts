@@ -43,6 +43,10 @@ class AuthService {
     return db.query(`Update users Set isverify = true where id=$1`, [userId]);
   }
 
+  async deleteAccount(db: PostgresDb, userId: string): Promise<unknown> {
+    return db.query("DELETE FROM users WHERE userid = $1", [userId]);
+  }
+
   sendMail(
     mailer: Transporter,
     user: IUser,

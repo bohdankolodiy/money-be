@@ -16,6 +16,14 @@ class UserService {
     return (await db.query(`Select * from users where id = $1`, [id])).rows[0];
   }
 
+  async getUsers(req: FastifyRequest): Promise<IUser[]> {
+    return (
+      await req.db.query(`Select * from users where id != $1`, [
+        (await userService.getAuthUser(req)).id,
+      ])
+    ).rows;
+  }
+
   async findOneByWallet(db: PostgresDb, wallet: string): Promise<IUser> {
     return (await db.query(`Select * from users where wallet=$1`, [wallet]))
       .rows[0];
