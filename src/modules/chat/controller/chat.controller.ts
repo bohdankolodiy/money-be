@@ -4,6 +4,7 @@ import { IUser } from "../../../interfaces/user.interface";
 import { ChatModel, MessageModel } from "../../../models/chat.model";
 import { CreateChatType, MessageType } from "../schema/chat.schema";
 import { userService } from "../../user/services/user.service";
+import { emitter } from "../../../emitter/chat-emitter";
 
 class ChatController {
   async getAllChats(req: FastifyRequest, reply: FastifyReply) {
@@ -53,13 +54,9 @@ class ChatController {
     reply: FastifyReply
   ) {
     try {
-      const { chat_id, sender_id, text } = req.body as MessageType;
+      const { chat_id, sender_id, text, reciever_id } = req.body as MessageType;
       const newMessage = new MessageModel(text, chat_id, sender_id);
-
-      req.socketIo.clients.forEach((cl) => {
-        cl.send("get_message");
-      });
-
+      emitter.emit('room-event', {client: reciever_id});
       await chatService.createMessage(req.db, newMessage);
       return reply.code(201).send(newMessage);
     } catch (e) {

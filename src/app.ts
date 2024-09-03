@@ -11,7 +11,7 @@ import * as dotenv from "dotenv";
 import FastifyCors from "@fastify/cors";
 import { fastifyWebsocket } from "@fastify/websocket";
 import * as WebSocket from "ws";
-
+import { emitter } from "./emitter/chat-emitter";
 declare module "fastify" {
   interface FastifyInstance {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -38,8 +38,20 @@ server.register(FastifyCors, {
 });
 
 server.register(async function (fastify) {
-  fastify.get("/ws", { websocket: true }, (connection, req) => {
-    const { clients } = fastify.websocketServer;
+  fastify.get("/ws", { websocket: true }, (connection) => {
+
+    connection.on("message", (data) => {
+      const newData = JSON.parse(data.toString());
+
+      const messageListener = (
+        event: { client: string }
+      ) => {
+        if (event.client == newData.clientId) connection.send("get_message");
+        
+      };
+
+      emitter.on("room-event", messageListener);
+    });
 
     connection.send("hi from server");
   });

@@ -52,10 +52,10 @@ class ChatService {
 
       const send_dates: Array<{ date: string }> = (
         await db.query(
-          "SELECT DISTINCT DATE_TRUNC('day', send_date::TIMESTAMP) as date from messages"
+          "SELECT DISTINCT DATE_TRUNC('day', send_date::TIMESTAMP) as date from messages where chat_id = $1  ORDER BY date", [chatId]
         )
       ).rows;
-
+      
       const mappedMessages: IMessagesReply[] = send_dates.map((res) => ({
         date: res.date,
         messages: messages.filter(

@@ -43,6 +43,7 @@ export const MessageBobyObject = Type.Object({
   text: Type.String(),
   chat_id: Type.String(),
   sender_id: Type.String(),
+  reciever_id: Type.String(),
 });
 
 export type CreateChatType = Static<typeof ChatBobyObject>;

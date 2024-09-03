@@ -90,7 +90,7 @@ export const resetPasswordSchema = {
 export const deleteSchema = {
   schema: {
     response: {
-      203: null,
+      203: Type.Any(),
     },
   },
 };
