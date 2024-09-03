@@ -1,5 +1,6 @@
 import { FastifyInstance } from "fastify";
 import {
+  deleteSchema,
   forgetPasswordSchema,
   resetPasswordSchema,
   userLoginSchema,
@@ -17,9 +18,6 @@ export async function authRoutes(app: FastifyInstance) {
     forgetPasswordSchema,
     authController.forgetPassword
   );
-  app.post(
-    "/resetPassword",
-    resetPasswordSchema,
-    authController.resetPassword
-  );
+  app.post("/resetPassword", resetPasswordSchema, authController.resetPassword);
+  app.delete("/delete", deleteSchema, authController.resetPassword);
 }

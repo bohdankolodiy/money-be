@@ -22,6 +22,16 @@ class UserController {
     }
   }
 
+  async getUsers(req: FastifyRequest, reply: FastifyReply) {
+    try {
+      const users: IUser[] = await userService.getUsers(req);
+
+      return reply.code(200).send(users);
+    } catch (e) {
+      reply.code(500).send({ message: e });
+    }
+  }
+
   async transactUsersMoney(
     req: FastifyRequest<{
       Body: TransactType;

@@ -159,6 +159,15 @@ class AuthController {
     return await bcrypt.hash(password, Number(process.env.SECRET_KEY!));
   }
 
+  async delettAccount(req: FastifyRequest, reply: FastifyReply) {
+    try {
+      await authService.deleteAccount(req.db, (req.user as IUser).id);
+      reply.code(203).send();
+    } catch (e) {
+      reply.code(500).send({ message: e });
+    }
+  }
+
   signToken(req: FastifyRequest, user: IUser): string {
     const payload = {
       id: user.id,
