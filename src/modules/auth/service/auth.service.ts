@@ -10,14 +10,14 @@ class AuthService {
   async createUser(db: PostgresDb, data: IUser): Promise<{ id: string }> {
     return (
       await db.query(
-        `INSERT INTO users(id, email, password, wallet, balance, isverify) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+        `INSERT INTO users(id, email, password, wallet, balance, is_verify) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
         [
           data.id,
           data.email,
           data.password,
           data.wallet,
           data.balance,
-          data.isverify,
+          data.is_verify,
         ]
       )
     ).rows[0];
@@ -40,7 +40,7 @@ class AuthService {
   }
 
   async verifyUser(db: PostgresDb, userId: string): Promise<QueryResult> {
-    return db.query(`Update users Set isverify = true where id=$1`, [userId]);
+    return db.query(`Update users Set is_verify = true where id=$1`, [userId]);
   }
 
   async deleteAccount(db: PostgresDb, userId: string): Promise<unknown> {

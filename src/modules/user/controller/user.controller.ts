@@ -18,7 +18,7 @@ class UserController {
 
       return reply.code(200).send(user);
     } catch (e) {
-      reply.code(500).send({ message: e });
+      return reply.code(500).send({ message: e });
     }
   }
 
@@ -28,7 +28,7 @@ class UserController {
 
       return reply.code(200).send(users);
     } catch (e) {
-      reply.code(500).send({ message: e });
+      return reply.code(500).send({ message: e });
     }
   }
 
@@ -73,11 +73,11 @@ class UserController {
 
       await userService.transactionPayment(req.db, userInfo, recieverInfo);
 
-      reply.code(200).send({
+      return reply.code(200).send({
         balance: 0,
       });
     } catch (e) {
-      reply.code(500).send(e);
+      return reply.code(500).send(e);
     }
   }
 
@@ -107,11 +107,11 @@ class UserController {
       await userService.transactionTransfer(req.db, userInfo);
 
       userController.updateUserMoney(newUserAmount);
-      reply.code(200).send({
+      return reply.code(200).send({
         balance: newUserAmount,
       });
     } catch (e) {
-      reply.code(500).send(e);
+      return reply.code(500).send(e);
     }
   }
 
@@ -144,11 +144,11 @@ class UserController {
       await userService.transactionTransfer(req.db, userInfo);
 
       userController.updateUserMoney(newUserAmount);
-      reply.code(200).send({
+      return reply.code(200).send({
         balance: newUserAmount,
       });
     } catch (e) {
-      reply.code(500).send(e);
+      return reply.code(500).send(e);
     }
   }
 
@@ -157,7 +157,7 @@ class UserController {
     reply: FastifyReply
   ) {
     try {
-      const { status, wallet, amount, transactid } = req.body;
+      const { status, wallet, amount, transact_id } = req.body;
       const reciever = await userService.findOneByWallet(req.db, wallet);
 
       if (!userController.user)
@@ -190,13 +190,13 @@ class UserController {
         req.db,
         senderInfo,
         recieverInfo,
-        transactid,
+        transact_id,
         status
       );
 
       return reply.code(200).send();
     } catch (e) {
-      reply.code(500).send({ message: e });
+      return reply.code(500).send({ message: e });
     }
   }
 

@@ -6,7 +6,7 @@ export interface IUser {
   password: string;
   wallet: string;
   balance: number;
-  isverify: boolean;
+  is_verify: boolean;
 }
 
 export interface IInfo {

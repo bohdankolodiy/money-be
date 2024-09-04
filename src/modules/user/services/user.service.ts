@@ -75,14 +75,14 @@ class UserService {
         userInfo.history.id,
         "Pending"
       );
-      const transactid = (
+      const transact_id = (
         await historyService.createTransaction(db, transaction)
       ).id;
       await historyService.updateHistoryTransactionId(
         db,
-        transactid,
-        transaction.senderid,
-        transaction.recieverid
+        transact_id,
+        transaction.sender_id,
+        transaction.reciever_id
       );
     });
   }
@@ -91,7 +91,7 @@ class UserService {
     db: PostgresDb,
     userInfo: Omit<IInfo, "history">,
     recieverInfo: Omit<IInfo, "history">,
-    transactid: string,
+    transact_id: string,
     status: string
   ): Promise<unknown> {
     return db.transact(async () => {
@@ -103,7 +103,7 @@ class UserService {
           recieverInfo.id
         );
       }
-      await historyService.updateHistoryStatus(db, transactid, status);
+      await historyService.updateHistoryStatus(db, transact_id, status);
     });
   }
 

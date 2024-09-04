@@ -21,8 +21,10 @@ class ChatController {
 
   async getMessagesByChatId(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const messageId = (req.params as { id: string }).id;
-      const messages = await chatService.getUserChatMessage(req.db, messageId);
+      const chat_id = (req.params as { id: string }).id;
+      if (!chat_id)
+        return reply.code(400).send("Please, provide correct chat_id");
+      const messages = await chatService.getUserChatMessage(req.db, chat_id);
       return reply.code(200).send(messages);
     } catch (e) {
       return reply.code(500).send(e);
@@ -56,9 +58,22 @@ class ChatController {
     try {
       const { chat_id, sender_id, text, reciever_id } = req.body as MessageType;
       const newMessage = new MessageModel(text, chat_id, sender_id);
-      emitter.emit('room-event', {client: reciever_id});
+      emitter.emit("room-event", { client: reciever_id });
       await chatService.createMessage(req.db, newMessage);
       return reply.code(201).send(newMessage);
+    } catch (e) {
+      return reply.code(500).send(e);
+    }
+  }
+
+  async deleteChat(req: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { id } = req.params as { id: string };
+
+      if (!id) return reply.code(400).send("Please, provide correct userId");
+
+      await chatService.deleteChat(req.db, id);
+      return reply.code(204).send();
     } catch (e) {
       return reply.code(500).send(e);
     }

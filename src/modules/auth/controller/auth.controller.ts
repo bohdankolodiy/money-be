@@ -72,7 +72,7 @@ class AuthController {
           message: "Invalid email or password",
         });
 
-      if (!user.isverify)
+      if (!user.is_verify)
         return reply.code(401).send({
           message: "Verify you email",
         });
@@ -161,6 +161,7 @@ class AuthController {
 
   async delettAccount(req: FastifyRequest, reply: FastifyReply) {
     try {
+      if (!req.user) return reply.code(400).send("User not found");
       await authService.deleteAccount(req.db, (req.user as IUser).id);
       reply.code(203).send();
     } catch (e) {

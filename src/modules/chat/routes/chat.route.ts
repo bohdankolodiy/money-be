@@ -4,6 +4,7 @@ import {
   AddMessageSchema,
   ChatSchema,
   CreateChatSchema,
+  DeleteChatSchema,
   MessageSchema,
 } from "../schema/chat.schema";
 
@@ -29,5 +30,10 @@ export async function chatRoutes(app: FastifyInstance) {
     "/message/add",
     { preHandler: [app.authenticate], ...AddMessageSchema },
     chatController.addMessage
+  );
+  app.delete(
+    "/:id",
+    { preHandler: [app.authenticate], ...DeleteChatSchema },
+    chatController.deleteChat
   );
 }

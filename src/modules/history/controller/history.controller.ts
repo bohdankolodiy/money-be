@@ -7,14 +7,16 @@ class HistoryController {
     try {
       const historyId = (req.query as { id: string }).id;
 
+      if (!historyId) return reply.code(400).send("Please, provide correct id");
+
       const history: ITransactHistory[] = await historyService.getAllHistory(
         req.db,
         historyId
       );
 
-      reply.code(200).send(history);
+      return reply.code(200).send(history);
     } catch (e) {
-      reply.code(500).send({ message: "smth went wrong" });
+      return reply.code(500).send({ message: "smth went wrong" });
     }
   }
 
@@ -22,11 +24,13 @@ class HistoryController {
     try {
       const userId = (req.params as { id: string }).id;
 
+      if (!userId) return reply.code(400).send("Please, provide correct id");
+
       const history = await historyService.getUserHistory(req.db, userId);
 
-      reply.code(200).send(history);
+      return reply.code(200).send(history);
     } catch (e) {
-      reply.code(500).send({ message: "smth went wrong" });
+      return reply.code(500).send({ message: "smth went wrong" });
     }
   }
 }

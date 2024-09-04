@@ -5,18 +5,18 @@ export class Transactions implements ITransaction {
   id = generateUniqueId();
   amount: number;
   status: string;
-  recieverid: string;
-  senderid: string;
+  reciever_id: string;
+  sender_id: string;
 
   constructor(
     amount: number,
-    recieverid: string,
-    senderid: string,
+    reciever_id: string,
+    sender_id: string,
     status: string
   ) {
     this.amount = amount;
-    this.recieverid = recieverid;
-    this.senderid = senderid;
+    this.reciever_id = reciever_id;
+    this.sender_id = sender_id;
     this.status = status;
   }
 }

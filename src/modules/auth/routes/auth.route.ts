@@ -19,5 +19,5 @@ export async function authRoutes(app: FastifyInstance) {
     authController.forgetPassword
   );
   app.post("/resetPassword", resetPasswordSchema, authController.resetPassword);
-  app.delete("/delete", deleteSchema, authController.resetPassword);
+  app.delete("/delete", deleteSchema, authController.delettAccount);
 }

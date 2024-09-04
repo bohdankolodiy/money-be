@@ -18,7 +18,7 @@ export const TransactSchema = Type.Object({
 export const updateStatusSchema = Type.Object({
   wallet: Type.String(),
   status: Type.String(),
-  transactid: Type.String(),
+  transact_id: Type.String(),
   amount: Type.Number(),
 });
 

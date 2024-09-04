@@ -40,11 +40,11 @@ class ChatService {
 
   async getUserChatMessage(
     db: PostgresDb,
-    chatId: string
+    chat_id: string
   ): Promise<IMessagesReply[]> {
     return await db.transact(async () => {
       const messages: IMessages[] = (
-        await db.query("Select * from messages where chat_id=$1", [chatId])
+        await db.query("Select * from messages where chat_id=$1", [chat_id])
       ).rows.sort(
         (a, b) =>
           new Date(a.send_date).getDate() - new Date(b.send_date).getDate()
@@ -52,10 +52,11 @@ class ChatService {
 
       const send_dates: Array<{ date: string }> = (
         await db.query(
-          "SELECT DISTINCT DATE_TRUNC('day', send_date::TIMESTAMP) as date from messages where chat_id = $1  ORDER BY date", [chatId]
+          "SELECT DISTINCT DATE_TRUNC('day', send_date::TIMESTAMP) as date from messages where chat_id = $1  ORDER BY date",
+          [chat_id]
         )
       ).rows;
-      
+
       const mappedMessages: IMessagesReply[] = send_dates.map((res) => ({
         date: res.date,
         messages: messages.filter(
@@ -117,6 +118,10 @@ class ChatService {
       message_id,
       chat_id,
     ]);
+  }
+
+  async deleteChat(db: PostgresDb, chat_id: string): Promise<unknown> {
+    return db.query(`Delete from chat where chat_id = $1`, [chat_id]);
   }
 }
 

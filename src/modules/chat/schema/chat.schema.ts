@@ -66,6 +66,14 @@ export const CreateChatSchema = {
   },
 };
 
+export const DeleteChatSchema = {
+  schema: {
+    response: {
+      204: Type.Null(),
+    },
+  },
+};
+
 export const MessageSchema = {
   schema: {
     response: {

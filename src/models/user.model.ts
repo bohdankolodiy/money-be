@@ -11,7 +11,7 @@ export class User implements IUser {
     useLetters: false,
   });
   balance = 0.0;
-  isverify: boolean = false;
+  is_verify: boolean = false;
 
   constructor(hash: string, email: string) {
     this.password = hash;

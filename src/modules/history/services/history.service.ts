@@ -63,7 +63,7 @@ class HistoryService {
   ): Promise<{ id: string }> {
     return (
       await db.query(
-        "INSERT INTO history(id, amount, action, userId, status, date, card, wallet, transactid) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING ID",
+        "INSERT INTO history(id, amount, action, userId, status, date, card, wallet, transact_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING ID",
         [
           body.id,
           body.amount,
@@ -73,7 +73,7 @@ class HistoryService {
           body.date,
           body.card,
           body.wallet,
-          body.transactid,
+          body.transact_id,
         ]
       )
     ).rows[0];
@@ -81,39 +81,39 @@ class HistoryService {
 
   async updateHistoryStatus(
     db: PostgresDb,
-    transactid: string,
+    transact_id: string,
     status: string
   ): Promise<unknown> {
     return await db.transact(async () => {
-      await db.query(`Update history set status = $1 where transactid = $2`, [
+      await db.query(`Update history set status = $1 where transact_id = $2`, [
         status,
-        transactid,
+        transact_id,
       ]);
-      await db.query(`Update history set status = $1 where transactid = $2`, [
+      await db.query(`Update history set status = $1 where transact_id = $2`, [
         status,
-        transactid,
+        transact_id,
       ]);
 
       await db.query(`Update transactions set status = $1 where id = $2`, [
         status,
-        transactid,
+        transact_id,
       ]);
     });
   }
 
   async updateHistoryTransactionId(
     db: PostgresDb,
-    transactid: string,
+    transact_id: string,
     senderHistoryId: string,
     recieverHistoryId: string
   ): Promise<unknown> {
     return await db.transact(async () => {
-      await db.query(`Update history set transactid = $1 where id = $2`, [
-        transactid,
+      await db.query(`Update history set transact_id = $1 where id = $2`, [
+        transact_id,
         senderHistoryId,
       ]);
-      await db.query(`Update history set transactid = $1 where id = $2`, [
-        transactid,
+      await db.query(`Update history set transact_id = $1 where id = $2`, [
+        transact_id,
         recieverHistoryId,
       ]);
     });
@@ -127,8 +127,8 @@ class HistoryService {
 
     return (
       await db.query(
-        "INSERT INTO transactions(id, recieverid, senderid, amount, status) VALUES ($1, $2, $3, $4, $5) RETURNING ID",
-        [body.id, body.recieverid, body.senderid, body.amount, body.status]
+        "INSERT INTO transactions(id, reciever_id, sender_id, amount, status) VALUES ($1, $2, $3, $4, $5) RETURNING ID",
+        [body.id, body.reciever_id, body.sender_id, body.amount, body.status]
       )
     ).rows[0];
   }
