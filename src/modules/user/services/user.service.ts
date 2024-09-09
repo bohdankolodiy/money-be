@@ -95,7 +95,7 @@ class UserService {
     status: string
   ): Promise<unknown> {
     return db.transact(async () => {
-      if (status === MoneyStatus.Success) {
+      if (status === MoneyStatus.Success || status === MoneyStatus.Revert) {
         await userService.transferMoney(db, userInfo.amount, userInfo.id);
         await userService.transferMoney(
           db,

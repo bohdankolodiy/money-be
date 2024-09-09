@@ -44,7 +44,7 @@ class AuthService {
   }
 
   async deleteAccount(db: PostgresDb, userId: string): Promise<unknown> {
-    return db.query("DELETE FROM users WHERE userid = $1", [userId]);
+    return db.query("delete from users where id = $1", [userId]);
   }
 
   sendMail(

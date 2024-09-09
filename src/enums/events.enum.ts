@@ -1,3 +1,1 @@
-export enum MoneyEvent {
-    
-}
+export enum MoneyEvent {}

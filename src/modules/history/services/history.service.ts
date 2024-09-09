@@ -123,8 +123,6 @@ class HistoryService {
     db: PostgresDb,
     body: ITransaction
   ): Promise<{ id: string }> {
-    console.log(body);
-
     return (
       await db.query(
         "INSERT INTO transactions(id, reciever_id, sender_id, amount, status) VALUES ($1, $2, $3, $4, $5) RETURNING ID",

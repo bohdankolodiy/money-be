@@ -74,7 +74,7 @@ class UserController {
       await userService.transactionPayment(req.db, userInfo, recieverInfo);
 
       return reply.code(200).send({
-        balance: 0,
+        balance: userController.user.balance,
       });
     } catch (e) {
       return reply.code(500).send(e);
@@ -91,7 +91,7 @@ class UserController {
       if (!userController.user)
         userController.user = await userService.getAuthUser(req);
 
-      const error = userController.checkValidation(amount, card);
+      const error = userController.checkValidation(amount, card, false);
       if (error) return reply.code(400).send({ message: error });
 
       const newUserAmount = userController.user!.balance + amount;
@@ -166,15 +166,9 @@ class UserController {
       if (!reciever)
         return reply.code(400).send({ message: "No reciever with that id" });
 
-      const senderNewBalance =
-        status === MoneyStatus.Success
-          ? userController.user!.balance + Math.abs(amount)
-          : userController.user!.balance;
+      let senderNewBalance = userController.user!.balance;
 
-      const newRecieverAmount =
-        status === MoneyStatus.Success
-          ? reciever!.balance - Math.abs(amount)
-          : reciever!.balance;
+      let newRecieverAmount = reciever!.balance;
 
       const senderInfo: Omit<IInfo, "history"> = {
         id: userController.user.id,
@@ -186,6 +180,23 @@ class UserController {
         amount: newRecieverAmount,
       };
 
+      switch (status) {
+        case MoneyStatus.Success:
+          senderNewBalance = userController.user!.balance + Math.abs(amount);
+          newRecieverAmount = reciever!.balance - Math.abs(amount);
+
+          senderInfo.amount = senderNewBalance;
+          recieverInfo.amount = newRecieverAmount;
+
+          break;
+        case MoneyStatus.Revert:
+          senderNewBalance = userController.user!.balance + Math.abs(amount);
+          newRecieverAmount = reciever!.balance - Math.abs(amount);
+
+          senderInfo.amount = senderNewBalance;
+          recieverInfo.amount = newRecieverAmount;
+          break;
+      }
       await userService.transactionUpdatePayment(
         req.db,
         senderInfo,
@@ -200,8 +211,12 @@ class UserController {
     }
   }
 
-  checkValidation(amount: number, card: string): string | void {
-    if (amount > userController.user!.balance)
+  checkValidation(
+    amount: number,
+    card: string,
+    checkAmount: boolean = true
+  ): string | void {
+    if (checkAmount && amount > userController.user!.balance)
       return "Amount is bigger than balance";
 
     if (card.length !== 16) return "Card must be in 16 symbol length";
