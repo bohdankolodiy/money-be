@@ -51,7 +51,7 @@ export async function userRoutes(app: FastifyInstance) {
   );
 
   app.put(
-    "/status-update",
+    "/statusUpdate",
     {
       preHandler: [app.authenticate],
       ...updatePaymentStatusSchema,
