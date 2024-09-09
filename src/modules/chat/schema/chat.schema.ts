@@ -86,7 +86,7 @@ export const AddMessageSchema = {
   schema: {
     body: MessageBobyObject,
     response: {
-      200: MessageObject,
+      201: MessageObject,
     },
   },
 };

@@ -1,15 +1,15 @@
 import { Static, Type } from "@sinclair/typebox";
 
-export const UserSchema = Type.Object({
+export const UserObject = Type.Object({
   id: Type.String(),
   email: Type.String({ format: "email" }),
   wallet: Type.String(),
   balance: Type.Number(),
 });
 
-export const UsersSchema = Type.Array(UserSchema);
+export const UsersArray = Type.Array(UserObject);
 
-export const TransactSchema = Type.Object({
+export const TransactBodyObject = Type.Object({
   wallet: Type.String(),
   comment: Type.String(),
   amount: Type.Number(),
@@ -22,7 +22,7 @@ export const updateStatusSchema = Type.Object({
   amount: Type.Number(),
 });
 
-export const TransferSchema = Type.Object({
+export const TransferBodyObject = Type.Object({
   amount: Type.Number(),
   card: Type.String(),
 });
@@ -31,14 +31,14 @@ export const TransferResponseSchema = Type.Object({
   balance: Type.Number(),
 });
 
-export type TransferType = Static<typeof TransferSchema>;
-export type TransactType = Static<typeof TransactSchema>;
+export type TransferType = Static<typeof TransferBodyObject>;
+export type TransactType = Static<typeof TransactBodyObject>;
 export type UpdateStatusType = Static<typeof updateStatusSchema>;
 
 export const getUserSchema = {
   schema: {
     response: {
-      200: UserSchema,
+      200: UserObject,
     },
   },
 };
@@ -46,25 +46,25 @@ export const getUserSchema = {
 export const getUsersSchema = {
   schema: {
     response: {
-      200: UsersSchema,
+      200: UsersArray,
     },
   },
 };
 
 export const transferMoneySchema = {
   schema: {
-    body: TransferSchema,
+    body: TransferBodyObject,
     response: {
-      200: TransferResponseSchema,
+      201: TransferResponseSchema,
     },
   },
 };
 
 export const transactMoneySchema = {
   schema: {
-    body: TransactSchema,
+    body: TransactBodyObject,
     response: {
-      200: TransferResponseSchema,
+      201: TransferResponseSchema,
     },
   },
 };

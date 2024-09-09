@@ -1,6 +1,6 @@
 import { Static, Type } from "@sinclair/typebox";
 
-export const HistorySchema = Type.Object({
+export const HistoryObject = Type.Object({
   id: Type.String(),
   amount: Type.Number(),
   action: Type.String(),
@@ -13,24 +13,24 @@ export const HistorySchema = Type.Object({
   transact_id: Type.String() || Type.Null(),
 });
 
-export const HistoryResponseSchema = Type.Array(
+export const HistoryResponseArray = Type.Array(
   Type.Object({
     amount: Type.Number(),
     date: Type.String(),
-    items: Type.Array(HistorySchema),
+    items: Type.Array(HistoryObject),
   })
 );
 
-export const HistoryRequestSchema = Type.Object({
+export const HistoryBodyObject = Type.Object({
   id: Type.String(),
 });
 
-export type HistoryRequestType = Static<typeof HistoryRequestSchema>;
+export type HistoryRequestType = Static<typeof HistoryBodyObject>;
 
 export const allHistorySchema = {
   schema: {
     response: {
-      200: HistoryResponseSchema,
+      200: HistoryResponseArray,
     },
   },
 };

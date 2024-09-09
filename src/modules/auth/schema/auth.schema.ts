@@ -1,15 +1,15 @@
 import { Static, Type } from "@sinclair/typebox";
 
-export const UserAuthObject = Type.Object({
+export const UserAuthBodyObject = Type.Object({
   password: Type.String(),
   email: Type.String({ format: "email" }),
 });
 
-export const forgetPasswordObject = Type.Object({
+export const ForgetPasswordBodyObject = Type.Object({
   email: Type.String({ format: "email" }),
 });
 
-export const resetPasswordObject = Type.Object({
+export const ResetPasswordBodyObject = Type.Object({
   password: Type.String(),
   token: Type.String(),
 });
@@ -23,7 +23,7 @@ export const UserObject = Type.Object({
   transactionsHistory: Type.Array(Type.Number()),
 });
 
-export const UserIdObject = Type.Object({
+export const UserIdBodyObject = Type.Object({
   id: Type.String(),
 });
 
@@ -36,15 +36,15 @@ export const UserDefaultObject = Type.Object({
 });
 
 export type UserType = Static<typeof UserObject>;
-export type UserAuthType = Static<typeof UserAuthObject>;
-export type UserIdType = Static<typeof UserIdObject>;
+export type UserAuthType = Static<typeof UserAuthBodyObject>;
+export type UserIdType = Static<typeof UserIdBodyObject>;
 export type TokenType = Static<typeof UserTokenObject>;
-export type ForgetPasswordType = Static<typeof forgetPasswordObject>;
-export type ResetPasswordType = Static<typeof resetPasswordObject>;
+export type ForgetPasswordType = Static<typeof ForgetPasswordBodyObject>;
+export type ResetPasswordType = Static<typeof ResetPasswordBodyObject>;
 
 export const userRegisterSchema = {
   schema: {
-    body: UserAuthObject,
+    body: UserAuthBodyObject,
     response: {
       201: UserDefaultObject,
     },
@@ -53,7 +53,7 @@ export const userRegisterSchema = {
 
 export const userLoginSchema = {
   schema: {
-    body: UserAuthObject,
+    body: UserAuthBodyObject,
     response: {
       200: UserTokenObject,
     },
@@ -62,7 +62,7 @@ export const userLoginSchema = {
 
 export const userVerifySchema = {
   schema: {
-    body: UserIdObject,
+    body: UserIdBodyObject,
     response: {
       200: UserDefaultObject,
     },
@@ -71,7 +71,7 @@ export const userVerifySchema = {
 
 export const forgetPasswordSchema = {
   schema: {
-    body: forgetPasswordObject,
+    body: ForgetPasswordBodyObject,
     response: {
       200: UserDefaultObject,
     },
@@ -80,7 +80,7 @@ export const forgetPasswordSchema = {
 
 export const resetPasswordSchema = {
   schema: {
-    body: resetPasswordObject,
+    body: ResetPasswordBodyObject,
     response: {
       200: UserDefaultObject,
     },

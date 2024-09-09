@@ -73,7 +73,7 @@ class UserController {
 
       await userService.transactionPayment(req.db, userInfo, recieverInfo);
 
-      return reply.code(200).send({
+      return reply.code(201).send({
         balance: userController.user.balance,
       });
     } catch (e) {

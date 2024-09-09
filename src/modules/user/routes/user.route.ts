@@ -25,7 +25,7 @@ export async function userRoutes(app: FastifyInstance) {
     },
     userController.getUsers
   );
-  app.put(
+  app.post(
     "/transact",
     {
       preHandler: [app.authenticate],
@@ -33,7 +33,7 @@ export async function userRoutes(app: FastifyInstance) {
     },
     userController.transactUsersMoney
   );
-  app.put(
+  app.post(
     "/deposit",
     {
       preHandler: [app.authenticate],
@@ -41,7 +41,7 @@ export async function userRoutes(app: FastifyInstance) {
     },
     userController.userDeposit
   );
-  app.put(
+  app.post(
     "/withdrawal",
     {
       preHandler: [app.authenticate],

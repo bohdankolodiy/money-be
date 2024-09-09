@@ -163,7 +163,7 @@ class AuthController {
     try {
       if (!req.user) return reply.code(400).send("User not found");
       await authService.deleteAccount(req.db, (req.user as IUser).id);
-      reply.code(203).send();
+      reply.code(204).send();
     } catch (e) {
       reply.code(500).send({ message: e });
     }
