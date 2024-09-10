@@ -15,6 +15,7 @@ import fs from "fs";
 import path from "path";
 import * as dotenv from "dotenv";
 import * as WebSocket from "ws";
+import { IMessages } from "./interfaces/chat.interface";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -45,14 +46,23 @@ server.register(async function (fastify) {
     connection.on("message", (data) => {
       const newData = JSON.parse(data.toString());
 
-      const messageListener = (event: { client: string }) => {
-        if (event.client == newData.clientId) connection.send("get_message");
+      const messageListener = (event: {
+        client: string;
+        chat_id: string;
+        message: IMessages;
+      }) => {
+        if (event.client == newData.clientId)
+          connection.send(
+            JSON.stringify({
+              event: "get_message",
+              chat_id: event.chat_id,
+              message: event.message,
+            })
+          );
       };
 
       emitter.on("room-event", messageListener);
     });
-
-    connection.send("hi from server");
   });
 });
 

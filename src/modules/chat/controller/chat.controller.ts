@@ -58,7 +58,11 @@ class ChatController {
     try {
       const { chat_id, sender_id, text, reciever_id } = req.body as MessageType;
       const newMessage = new MessageModel(text, chat_id, sender_id);
-      emitter.emit("room-event", { client: reciever_id });
+      emitter.emit("room-event", {
+        client: reciever_id,
+        chat_id,
+        message: newMessage,
+      });
       await chatService.createMessage(req.db, newMessage);
       return reply.code(201).send(newMessage);
     } catch (e) {
