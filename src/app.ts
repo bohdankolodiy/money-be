@@ -1,22 +1,25 @@
-import fastify from "fastify";
 import { authRoutes } from "./modules/auth/routes/auth.route";
 import { userRoutes } from "./modules/user/routes/user.route";
 import { historyRoutes } from "./modules/history/routes/history.route";
 import { chatRoutes } from "./modules/chat/routes/chat.route";
 import { VerifyToken } from "./modules/auth/decorator/auth.decorator";
-import fastifyJwt, { JWT } from "@fastify/jwt";
 import { Transporter } from "nodemailer";
 import { PostgresDb, fastifyPostgres } from "@fastify/postgres";
-import * as dotenv from "dotenv";
-import FastifyCors from "@fastify/cors";
 import { fastifyWebsocket } from "@fastify/websocket";
-import * as WebSocket from "ws";
 import { emitter } from "./emitter/chat-emitter";
+import { Client } from "pg";
+import fastifyJwt, { JWT } from "@fastify/jwt";
+import FastifyCors from "@fastify/cors";
+import fastify from "fastify";
+import fs from "fs";
+import path from "path";
+import * as dotenv from "dotenv";
+import * as WebSocket from "ws";
+
 declare module "fastify" {
   interface FastifyInstance {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     authenticate: any;
-    // io: Server;
   }
   interface FastifyRequest {
     jwt: JWT;
@@ -39,15 +42,11 @@ server.register(FastifyCors, {
 
 server.register(async function (fastify) {
   fastify.get("/ws", { websocket: true }, (connection) => {
-
     connection.on("message", (data) => {
       const newData = JSON.parse(data.toString());
 
-      const messageListener = (
-        event: { client: string }
-      ) => {
+      const messageListener = (event: { client: string }) => {
         if (event.client == newData.clientId) connection.send("get_message");
-        
       };
 
       emitter.on("room-event", messageListener);
@@ -79,6 +78,37 @@ server.register(fastifyPostgres, {
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   port: Number(process.env.DB_PORT!),
+});
+
+async function runMigrations(): Promise<void> {
+  const client = new Client({
+    host: process.env.DB_HOST!,
+    user: process.env.DB_USER!,
+    password: process.env.DB_PASS!,
+    port: Number(process.env.DB_PORT!),
+    database: process.env.DB_NAME!,
+  });
+
+  try {
+    await client.connect();
+    const script = fs.readFileSync(
+      path.join(__dirname, "./mock/create-tables.sql"),
+      "utf8"
+    );
+
+    await client.query(script);
+  } catch (error) {
+    server.log.error("Error running migrations:", error);
+  }
+}
+
+// Hook to run migrations on first launch
+server.addHook("onReady", function (done) {
+  runMigrations()
+    .then(() => done())
+    .catch((e) => {
+      console.log(e);
+    });
 });
 
 server.decorate("authenticate", VerifyToken);
