@@ -77,8 +77,8 @@ server.register(require("fastify-mailer"), {
     host: "smtp.ethereal.email",
     port: 587,
     auth: {
-      user: "destini46@ethereal.email",
-      pass: "FX1VUbNgvnUp17uWsa",
+      user: process.env.MAILER_USER,
+      pass: process.env.MAILER_PASS,
     },
   },
 });
