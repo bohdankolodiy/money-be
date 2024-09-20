@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "tsx watch src/app.ts",
-    "start": "npm run dev && node src/app.ts --prod",
+    "start": "npm run build:ts && npm run dev && node src/app.ts --prod",
     "lint:ci": "eslint \"**/*.{ts,tsx}\"",
     "build:ts": "tsc -p tsconfig.json",
     "build:ci": "npm run build:ts && webpack",
