@@ -161,8 +161,9 @@ class AuthController {
 
   async delettAccount(req: FastifyRequest, reply: FastifyReply) {
     try {
-      if (!req.user) return reply.code(400).send("User not found");
-      await authService.deleteAccount(req.db, (req.user as IUser).id);
+      const user = await userService.getUserId(req);
+      if (!user) return reply.code(400).send("User not found");
+      await authService.deleteAccount(req.db, user);
       reply.code(204).send();
     } catch (e) {
       reply.code(500).send({ message: e });

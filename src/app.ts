@@ -148,9 +148,10 @@ server.register(userRoutes, { prefix: "api/v1/user" });
 server.register(historyRoutes, { prefix: "api/v1/history" });
 server.register(chatRoutes, { prefix: "api/v1/chat" });
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
+const host = process.env.HOST;
 
-server.listen({ port: +port, host: "0.0.0.0" }, (err, address) => {
+server.listen({ port: +port, host: host }, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
