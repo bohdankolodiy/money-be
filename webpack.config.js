@@ -2,29 +2,40 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
-const path = require('path');
+const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  mode: 'production',
-  entry: '/src/app.ts',
+  mode: "development",
+  entry: path.resolve(__dirname, "src/app.ts"),
   output: {
-    path: path.join(__dirname, 'dist'),
-    publicPath: '/',
+    path: path.join(__dirname, "dist"),
+    publicPath: "/", // Ensure the app is served from the root
   },
   devServer: {
     open: true,
     host: "localhost",
     port: 3000,
+    historyApiFallback: true, // For routing with a SPA (if applicable)
+    static: {
+      directory: path.join(__dirname, "dist"), // Serve content from the dist folder
+    },
+  },
+  resolve: {
+    extensions: [".ts", ".js"], // Add .ts to resolve TypeScript files
   },
   plugins: [
-
     new webpack.IgnorePlugin({
-      resourceRegExp: /mapbox/
+      resourceRegExp: /mapbox/,
     }),
-
     new webpack.IgnorePlugin({
       resourceRegExp: /^pg-native$/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /utf-8-validate/,
+    }),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /bufferutil/, // Ignore bufferutil as well
     }),
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
@@ -32,12 +43,9 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(ts|tsx)$/i,
-        loader: "ts-loader",
-        exclude: [
-          path.resolve(__dirname, "node_modules"),
-          path.resolve(__dirname, "../node_modules"),
-        ],
+        test: /\.ts$/,
+        use: "ts-loader",
+        exclude: /node_modules/,
       },
 
       // Add your rules for custom modules here

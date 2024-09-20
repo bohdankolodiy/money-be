@@ -4,12 +4,11 @@
   "description": "My webpack project",
   "main": "app.js",
   "scripts": {
-    "build": "npm run build:ts && webpack",
     "dev": "tsx watch src/app.ts",
-    "start": "npm run build:ts && npm run dev && node src/app.ts",
+    "start": "npm run dev && node src/app.ts --prod",
     "lint:ci": "eslint \"**/*.{ts,tsx}\"",
     "build:ts": "tsc -p tsconfig.json",
-    "build:ci": "tsc -p tsconfig.json && webpack",
+    "build:ci": "npm run build:ts && webpack",
     "watch": "webpack --watch",
     "serve": "webpack serve"
   },

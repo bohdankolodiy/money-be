@@ -148,8 +148,15 @@ server.register(userRoutes, { prefix: "api/v1/user" });
 server.register(historyRoutes, { prefix: "api/v1/history" });
 server.register(chatRoutes, { prefix: "api/v1/chat" });
 
+<<<<<<< Updated upstream
 // server.listen({ port: 3000, host: '0.0.0.0'}, (err, address) => {
 server.listen({ port: 3000}, (err, address) => {
+=======
+const port = process.env.PORT || 3000;
+const host = process.env.HOST;
+
+server.listen({ port: +port, host: host }, (err, address) => {
+>>>>>>> Stashed changes
   if (err) {
     console.error(err);
     process.exit(1);
