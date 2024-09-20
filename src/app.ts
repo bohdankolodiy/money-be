@@ -88,6 +88,7 @@ server.register(fastifyPostgres, {
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   port: Number(process.env.DB_PORT!),
+  database: process.env.DB_NAME!,
 });
 
 async function runMigrations(): Promise<void> {
@@ -147,7 +148,8 @@ server.register(userRoutes, { prefix: "api/v1/user" });
 server.register(historyRoutes, { prefix: "api/v1/history" });
 server.register(chatRoutes, { prefix: "api/v1/chat" });
 
-server.listen({ port: 3000 }, (err, address) => {
+// server.listen({ port: 3000, host: '0.0.0.0'}, (err, address) => {
+server.listen({ port: 3000}, (err, address) => {
   if (err) {
     console.error(err);
     process.exit(1);
