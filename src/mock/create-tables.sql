@@ -15,10 +15,18 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     wallet VARCHAR(255),
+    -- wallet_id VARCHAR(255),
     balance double precision,
     is_verify boolean,
-    CONSTRAINT users_pkey PRIMARY KEY (id)
+    -- CONSTRAINT users_pkey PRIMARY KEY (id) CONSTRAINT users_walletid_fkey FOREIGN KEY (wallet_id) REFERENCES wallets (id)
 );
+
+-- CREATE TABLE wallets (
+--     id VARCHAR(255) NOT NULL,
+--     balance double precision,
+--     wallet VARCHAR(255)
+--     CONSTRAINT wallets_pkey PRIMARY KEY (id)
+-- );
 
 -- Create history table 
 CREATE TABLE history (

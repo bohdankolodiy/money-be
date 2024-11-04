@@ -1,5 +1,7 @@
 import { authRoutes } from "./modules/auth/routes/auth.route";
 import { userRoutes } from "./modules/user/routes/user.route";
+import { walletRoutes } from "./modules/wallet/routes/wallet.route";
+import { transactionRoutes } from "./modules/transaction/routes/transaction.route";
 import { historyRoutes } from "./modules/history/routes/history.route";
 import { chatRoutes } from "./modules/chat/routes/chat.route";
 import { VerifyToken } from "./modules/auth/decorator/auth.decorator";
@@ -145,6 +147,8 @@ server.addHook("preHandler", (req, res, next) => {
 // routes
 server.register(authRoutes, { prefix: "api/v1/auth" });
 server.register(userRoutes, { prefix: "api/v1/user" });
+server.register(walletRoutes, { prefix: "api/v1/wallet" });
+server.register(transactionRoutes, { prefix: "api/v1/transaction" });
 server.register(historyRoutes, { prefix: "api/v1/history" });
 server.register(chatRoutes, { prefix: "api/v1/chat" });
 
