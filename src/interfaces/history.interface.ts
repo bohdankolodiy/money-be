@@ -2,7 +2,7 @@ export interface ITransactHistory {
   id: string;
   amount: number;
   action: string;
-  userid: string;
+  wallet_id: string;
   status: string;
   date: string;
   comment?: string | null;

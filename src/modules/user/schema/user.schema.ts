@@ -3,8 +3,7 @@ import { Type } from "@sinclair/typebox";
 export const UserObject = Type.Object({
   id: Type.String(),
   email: Type.String({ format: "email" }),
-  wallet: Type.String(),
-  balance: Type.Number(),
+  wallet_id: Type.String(),
 });
 
 export const UsersArray = Type.Array(UserObject);

@@ -5,7 +5,7 @@ export class History implements ITransactHistory {
   id = generateUniqueId();
   amount: number;
   action: string;
-  userid: string;
+  wallet_id: string;
   status: string;
   date: string = new Date().toLocaleString();
   card: string | null;
@@ -16,7 +16,7 @@ export class History implements ITransactHistory {
   constructor(
     amount: number,
     action: string,
-    userId: string,
+    wallet_id: string,
     status: string,
     comment: string | null = null,
     card: string | null = null,
@@ -25,7 +25,7 @@ export class History implements ITransactHistory {
   ) {
     this.amount = amount;
     this.action = action;
-    this.userid = userId;
+    this.wallet_id = wallet_id;
     this.status = status;
     this.card = card;
     this.wallet = wallet;
