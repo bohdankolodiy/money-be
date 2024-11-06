@@ -45,6 +45,11 @@ export class PaymentsService {
       .rows[0];
   }
 
+  async getWalletByWallet(db: PostgresDb, wallet: string): Promise<IWallet> {
+    return (await db.query(`Select * from wallets where wallet = $1`, [wallet]))
+      .rows[0];
+  }
+
   async getAuthUserWalletId(req: FastifyRequest): Promise<IWallet> {
     const decodedId: string = await this.getUserId(req);
     return this.getWalletById(req.db, decodedId);
