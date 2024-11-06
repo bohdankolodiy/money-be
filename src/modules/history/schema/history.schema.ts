@@ -4,7 +4,7 @@ export const HistoryObject = Type.Object({
   id: Type.String(),
   amount: Type.Number(),
   action: Type.String(),
-  userid: Type.String(),
+  wallet_id: Type.String(),
   status: Type.String(),
   date: Type.String(),
   comment: Type.String() || Type.Null(),

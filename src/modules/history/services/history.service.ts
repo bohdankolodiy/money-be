@@ -19,13 +19,13 @@ class HistoryService {
 
   async getUserHistory(
     db: PostgresDb,
-    userId: string
+    wallet_id: string
   ): Promise<ITransformHistory[]> {
     return await db.transact(async () => {
       const history = (
         await db.query(
-          "Select * from history where userId=$1 order by date desc",
-          [userId]
+          "Select * from history where wallet_id=$1 order by date desc",
+          [wallet_id]
         )
       ).rows;
 
@@ -38,11 +38,11 @@ class HistoryService {
                 FROM history
            ) AS history_date
            LEFT JOIN history h ON DATE_TRUNC('day', h.date::TIMESTAMP) = history_date.truncated_date
-                   AND h.userid = $1
+                   AND h.wallet_id = $1
            WHERE h.date IS NOT NULL
            GROUP BY DATE_TRUNC('day', h.date::TIMESTAMP)
            ORDER BY DATE_TRUNC('day', h.date::TIMESTAMP) DESC;`,
-          [userId]
+          [wallet_id]
         )
       ).rows;
 
@@ -63,12 +63,12 @@ class HistoryService {
   ): Promise<{ id: string }> {
     return (
       await db.query(
-        "INSERT INTO history(id, amount, action, userId, status, date, card, wallet, transact_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING ID",
+        "INSERT INTO history(id, amount, action, wallet_id, status, date, card, wallet, transact_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING ID",
         [
           body.id,
           body.amount,
           body.action,
-          body.userid,
+          body.wallet_id,
           body.status,
           body.date,
           body.card,

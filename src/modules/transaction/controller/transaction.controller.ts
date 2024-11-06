@@ -1,7 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { IInfo, IUser } from "../../../interfaces/user.interface";
 import { MoneyStatus } from "../../../enums/money-status.enum";
-import { userService } from "../../user/services/user.service";
 import { TransactType, UpdateStatusType } from "../schema/transaction.schema";
 import { transactionService } from "../services/transaction.service";
 
@@ -16,38 +15,46 @@ class TransactionController {
   ) {
     try {
       const { amount, wallet, comment } = req.body;
-      const user = await userService.getAuthUser(req);
+
+      const wallet_sender = await transactionService.getAuthUserWalletId(req);
+      const wallet_reciever = await transactionService.getWalletByWallet(
+        req.db,
+        wallet
+      );
+
+      if (wallet_reciever.id === wallet_sender.id)
+        return reply
+          .code(403)
+          .send({ message: "You cant send money to yourserlf" });
 
       const error = transactionService.checkValidation(
-        user.balance,
+        wallet_sender.balance,
         amount,
         wallet
       );
       if (error) return reply.code(400).send({ message: error });
 
-      const reciever = await userService.findOneByWallet(req.db, wallet);
-
-      if (!reciever)
+      if (!wallet_reciever)
         return reply
           .code(400)
           .send({ message: "No reciever with that wallet" });
 
       const userInfo: Omit<IInfo, "amount"> =
         transactionService.generateTransactionInfo(
-          user.id,
+          wallet_sender.id,
           "payment",
           -amount,
           comment,
-          wallet
+          wallet_reciever.wallet
         );
 
       const recieverInfo: Omit<IInfo, "amount"> =
         transactionService.generateTransactionInfo(
-          reciever.id,
+          wallet_reciever.id,
           "income",
           amount,
           comment,
-          user.wallet
+          wallet_sender.wallet
         );
 
       await transactionService.transactionPayment(
@@ -57,7 +64,7 @@ class TransactionController {
       );
 
       return reply.code(201).send({
-        balance: user.balance,
+        balance: wallet_sender.balance,
       });
     } catch (e) {
       return reply.code(500).send(e);
@@ -70,42 +77,44 @@ class TransactionController {
   ) {
     try {
       const { status, wallet, amount, transact_id } = req.body;
-      const reciever = await userService.findOneByWallet(req.db, wallet);
+      const wallet_sender = await transactionService.getWalletByWallet(
+        req.db,
+        wallet
+      );
+      const wallet_reciever = await transactionService.getAuthUserWalletId(req);
 
-      const user = await userService.getAuthUser(req);
-
-      if (!reciever)
+      if (!wallet_sender)
         return reply.code(400).send({ message: "No reciever with that id" });
 
-      let senderNewBalance = user!.balance;
+      let recieverNewBalance = wallet_reciever!.balance;
 
-      let newRecieverAmount = reciever!.balance;
+      let senderNewBalance = wallet_sender!.balance;
 
       const senderInfo: Omit<IInfo, "history"> = {
-        id: user.id,
+        id: wallet_sender.id,
         amount: senderNewBalance,
       };
 
       const recieverInfo: Omit<IInfo, "history"> = {
-        id: reciever.id,
-        amount: newRecieverAmount,
+        id: wallet_reciever.id,
+        amount: recieverNewBalance,
       };
 
       switch (status) {
         case MoneyStatus.Success:
-          senderNewBalance = user!.balance + Math.abs(amount);
-          newRecieverAmount = reciever!.balance - Math.abs(amount);
+          senderNewBalance = senderNewBalance - Math.abs(amount);
+          recieverNewBalance = recieverNewBalance + Math.abs(amount);
 
           senderInfo.amount = senderNewBalance;
-          recieverInfo.amount = newRecieverAmount;
+          recieverInfo.amount = recieverNewBalance;
 
           break;
         case MoneyStatus.Revert:
-          senderNewBalance = user!.balance + Math.abs(amount);
-          newRecieverAmount = reciever!.balance - Math.abs(amount);
+          senderNewBalance = senderNewBalance - Math.abs(amount);
+          recieverNewBalance = recieverNewBalance + Math.abs(amount);
 
           senderInfo.amount = senderNewBalance;
-          recieverInfo.amount = newRecieverAmount;
+          recieverInfo.amount = recieverNewBalance;
           break;
       }
       await transactionService.transactionUpdatePayment(
@@ -117,7 +126,7 @@ class TransactionController {
       );
 
       return reply.code(200).send({
-        balance: senderInfo.amount,
+        balance: recieverInfo.amount,
       });
     } catch (e) {
       return reply.code(500).send({ message: e });

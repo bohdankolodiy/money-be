@@ -25,12 +25,6 @@ class UserController {
       return reply.code(500).send({ message: e });
     }
   }
-
-  async updateUserMoney(amount: number) {
-    userController.user!.balance = amount;
-  }
-
-
 }
 
 export const userController = new UserController();

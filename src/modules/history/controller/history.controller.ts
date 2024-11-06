@@ -22,11 +22,11 @@ class HistoryController {
 
   async getUserHistory(req: FastifyRequest, reply: FastifyReply) {
     try {
-      const userId = (req.params as { id: string }).id;
+      const wallet_id = (req.params as { id: string }).id;
 
-      if (!userId) return reply.code(400).send("Please, provide correct id");
+      if (!wallet_id) return reply.code(400).send("Please, provide correct id");
 
-      const history = await historyService.getUserHistory(req.db, userId);
+      const history = await historyService.getUserHistory(req.db, wallet_id);
 
       return reply.code(200).send(history);
     } catch (e) {

@@ -2,10 +2,20 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { IInfo } from "../../../interfaces/user.interface";
 import { walletService } from "../services/wallet.service";
 import { TransferType } from "../schema/wallet.schema";
-import { userService } from "../../user/services/user.service";
-import { userController } from "../../user/controller/user.controller";
 
 class WalletController {
+  async getUserWalletId(
+    req: FastifyRequest<{ Body: TransferType }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const wallet = await walletService.getAuthUserWalletId(req);
+      return reply.code(200).send(wallet);
+    } catch (e) {
+      return reply.code(500).send(e);
+    }
+  }
+
   async userDeposit(
     req: FastifyRequest<{ Body: TransferType }>,
     reply: FastifyReply
@@ -13,20 +23,20 @@ class WalletController {
     try {
       const { amount, card } = req.body;
 
-      const user = await userService.getAuthUser(req);
+      const wallet = await walletService.getAuthUserWalletId(req);
 
       const error = walletService.checkValidation(
-        user.balance,
+        wallet.balance,
         amount,
         card,
         false
       );
       if (error) return reply.code(400).send({ message: error });
 
-      const newUserAmount = user!.balance + amount;
+      const newUserAmount = wallet!.balance + amount;
 
       const userInfo: IInfo = walletService.generateTransferInfo(
-        user.id,
+        wallet.id,
         "deposit",
         amount,
         newUserAmount,
@@ -35,7 +45,6 @@ class WalletController {
 
       await walletService.transactionTransfer(req.db, userInfo);
 
-      userController.updateUserMoney(newUserAmount);
       return reply.code(200).send({
         balance: newUserAmount,
       });
@@ -50,15 +59,16 @@ class WalletController {
   ) {
     try {
       const { amount, card } = req.body;
-      const user = await userService.getAuthUser(req);
 
-      const error = walletService.checkValidation(user.balance, amount, card);
+      const wallet = await walletService.getAuthUserWalletId(req);
+
+      const error = walletService.checkValidation(wallet.balance, amount, card);
       if (error) return reply.code(400).send({ message: error });
 
-      const newUserAmount = user!.balance - amount;
+      const newUserAmount = wallet!.balance - amount;
 
       const userInfo: IInfo = walletService.generateTransferInfo(
-        user.id,
+        wallet.id,
         "withdrawal",
         -amount,
         newUserAmount,
@@ -67,7 +77,6 @@ class WalletController {
 
       await walletService.transactionTransfer(req.db, userInfo);
 
-      userController.updateUserMoney(newUserAmount);
       return reply.code(200).send({
         balance: newUserAmount,
       });

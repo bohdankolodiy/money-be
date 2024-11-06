@@ -11,6 +11,8 @@ import { IUser } from "../../../interfaces/user.interface";
 import { authService } from "../service/auth.service";
 import { MailTypes } from "../../../enums/mail.enum";
 import { userService } from "../../user/services/user.service";
+import { IWallet } from "../../../interfaces/wallet.interface";
+import { Wallet } from "../../../models/wallet.model";
 
 class AuthController {
   async registerUser(
@@ -33,7 +35,8 @@ class AuthController {
       }
 
       const hash = await authController.generateHashPassword(password);
-      const user: IUser = new User(hash, email);
+      const wallet: IWallet = new Wallet();
+      const user: IUser = new User(hash, email, wallet.id);
 
       const userId = (await authService.createUser(req.db!, user))?.id;
 
@@ -174,6 +177,7 @@ class AuthController {
     const payload = {
       id: user.id,
       email: user.email,
+      wallet_id: user.wallet_id,
     };
 
     return req.jwt.sign(payload);
