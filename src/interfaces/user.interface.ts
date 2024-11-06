@@ -4,8 +4,7 @@ export interface IUser {
   id: string;
   email: string;
   password: string;
-  wallet: string;
-  balance: number;
+  wallet_id: string;
   is_verify: boolean;
 }
 

@@ -38,11 +38,11 @@ class ChatController {
     try {
       const { wallet_2, user2_id } = req.body as CreateChatType;
 
-      const { wallet, id } = await userService.getUserById(
+      const { wallet_id, id } = await userService.getUserById(
         req.db,
         (req.user as IUser).id
       );
-      const newChat = new ChatModel(id, wallet, user2_id, wallet_2);
+      const newChat = new ChatModel(id, wallet_id, user2_id, wallet_2);
       const chat = await chatService.createChat(req.db, newChat);
 
       return reply.code(201).send(chat);

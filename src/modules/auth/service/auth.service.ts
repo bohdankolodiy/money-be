@@ -10,15 +10,8 @@ class AuthService {
   async createUser(db: PostgresDb, data: IUser): Promise<{ id: string }> {
     return (
       await db.query(
-        `INSERT INTO users(id, email, password, wallet, balance, is_verify) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-        [
-          data.id,
-          data.email,
-          data.password,
-          data.wallet,
-          data.balance,
-          data.is_verify,
-        ]
+        `INSERT INTO users(id, email, password, wallet_id, is_verify) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+        [data.id, data.email, data.password, data.wallet_id, data.is_verify]
       )
     ).rows[0];
   }
