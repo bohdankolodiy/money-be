@@ -3,20 +3,11 @@ import generateUniqueId from "generate-unique-id";
 
 export class ChatModel implements IChat {
   chat_id = generateUniqueId();
-  wallet_1: string;
-  wallet_2: string;
   user1_id: string;
   user2_id: string;
   last_message_id: string | null = null;
 
-  constructor(
-    user1_id: string,
-    wallet_1: string,
-    user2_id: string,
-    wallet_2: string
-  ) {
-    this.wallet_1 = wallet_1;
-    this.wallet_2 = wallet_2;
+  constructor(user1_id: string, user2_id: string) {
     this.user1_id = user1_id;
     this.user2_id = user2_id;
   }

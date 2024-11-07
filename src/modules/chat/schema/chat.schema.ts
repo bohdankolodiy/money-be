@@ -35,8 +35,7 @@ export const ChatResponseObject = Type.Array(
 );
 
 export const ChatBobyObject = Type.Object({
-  user2_id: Type.String(),
-  wallet_2: Type.String(),
+  user_reciever_id: Type.String(),
 });
 
 export const MessageBobyObject = Type.Object({
