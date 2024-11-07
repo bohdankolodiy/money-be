@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { chatService } from "../services/chat.service";
 import { IUser } from "../../../interfaces/user.interface";
 import { ChatModel, MessageModel } from "../../../models/chat.model";
-import { CreateChatType, MessageType } from "../schema/chat.schema";
+import { CreateChatType, MessageType, ParamsType } from "../schema/chat.schema";
 import { userService } from "../../user/services/user.service";
 import { emitter } from "../../../emitter/chat-emitter";
 
@@ -19,11 +19,12 @@ class ChatController {
     }
   }
 
-  async getMessagesByChatId(req: FastifyRequest, reply: FastifyReply) {
+  async getMessagesByChatId(
+    req: FastifyRequest<{ Params: ParamsType }>,
+    reply: FastifyReply
+  ) {
     try {
-      const chat_id = (req.params as { id: string }).id;
-      if (!chat_id)
-        return reply.code(400).send("Please, provide correct chat_id");
+      const chat_id = req.params.id;
       const messages = await chatService.getUserChatMessage(req.db, chat_id);
       return reply.code(200).send(messages);
     } catch (e) {
@@ -70,12 +71,12 @@ class ChatController {
     }
   }
 
-  async deleteChat(req: FastifyRequest, reply: FastifyReply) {
+  async deleteChat(
+    req: FastifyRequest<{ Params: ParamsType }>,
+    reply: FastifyReply
+  ) {
     try {
-      const { id } = req.params as { id: string };
-
-      if (!id) return reply.code(400).send("Please, provide correct userId");
-
+      const { id } = req.params;
       await chatService.deleteChat(req.db, id);
       return reply.code(204).send();
     } catch (e) {

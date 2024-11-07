@@ -34,6 +34,10 @@ export const ChatResponseObject = Type.Array(
   })
 );
 
+export const ParamsObject = Type.Object({
+  id: Type.String(),
+});
+
 export const ChatBobyObject = Type.Object({
   user_reciever_id: Type.String(),
 });
@@ -47,6 +51,7 @@ export const MessageBobyObject = Type.Object({
 
 export type CreateChatType = Static<typeof ChatBobyObject>;
 export type MessageType = Static<typeof MessageBobyObject>;
+export type ParamsType = Static<typeof ParamsObject>;
 
 export const ChatSchema = {
   schema: {
@@ -67,6 +72,13 @@ export const CreateChatSchema = {
 
 export const DeleteChatSchema = {
   schema: {
+    params: {
+      type: "object",
+      required: ["id"],
+      properties: {
+        id: { type: "string" },
+      },
+    },
     response: {
       204: Type.Null(),
     },
@@ -75,6 +87,13 @@ export const DeleteChatSchema = {
 
 export const MessageSchema = {
   schema: {
+    params: {
+      type: "object",
+      required: ["id"],
+      properties: {
+        id: { type: "string" },
+      },
+    },
     response: {
       200: Type.Array(MessageResponseObject),
     },
