@@ -12,12 +12,11 @@ DROP TABLE IF EXISTS messages CASCADE;
 DROP TABLE IF EXISTS chat CASCADE;
 
 -- Create Users table
-
 CREATE TABLE wallets (
     id VARCHAR(255) NOT NULL,
     balance double precision,
-    wallet VARCHAR(255), 
-	CONSTRAINT wallets_pkey PRIMARY KEY (id)
+    wallet VARCHAR(255),
+    CONSTRAINT wallets_pkey PRIMARY KEY (id)
 );
 
 CREATE TABLE users (
@@ -61,8 +60,6 @@ CREATE TABLE chat (
     user1_id VARCHAR(255) NOT NULL,
     user2_id VARCHAR(255) NOT NULL,
     last_message_id VARCHAR(255),
-    wallet_1 VARCHAR(255),
-    wallet_2 VARCHAR(255),
     CONSTRAINT chat_pkey PRIMARY KEY (chat_id),
     CONSTRAINT chat_user1_id_user2_id_key UNIQUE (user1_id, user2_id),
     CONSTRAINT chat_user1_id_fkey FOREIGN KEY (user1_id) REFERENCES users (id) ON DELETE CASCADE,
@@ -126,8 +123,6 @@ VALUES
     );
 
 -- Insert mock data to history table
-
-
 -- Insert mock data to transaction table
 INSERT INTO
     transactions(id, reciever_id, sender_id, amount, status)
@@ -153,8 +148,6 @@ INSERT INTO
         user1_id,
         user2_id,
         last_message_id,
-        wallet_1,
-        wallet_2
     )
 VALUES
     (
@@ -162,8 +155,6 @@ VALUES
         '3p1ckdk20tsr5nhozu45',
         'k7oilq4nabo6d58pbo1y',
         'bw8h3cj6okkp0f2sarxi',
-        '4798811485900948',
-        '2849708795244879'
     );
 
 INSERT INTO

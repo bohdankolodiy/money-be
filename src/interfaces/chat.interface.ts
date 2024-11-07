@@ -1,9 +1,16 @@
-export interface IChat {
+export interface IChatResponse {
   chat_id: string;
   user1_id: string;
   user2_id: string;
   wallet_1: string;
   wallet_2: string;
+  last_message_id: string | null;
+}
+
+export interface IChat {
+  chat_id: string;
+  user1_id: string;
+  user2_id: string;
   last_message_id: string | null;
 }
 

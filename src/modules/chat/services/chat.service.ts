@@ -10,9 +10,28 @@ class ChatService {
   async getUserChats(db: PostgresDb, userId: string): Promise<IChatResponse[]> {
     return await db.transact(async () => {
       const chats = (
-        await db.query("Select * from chat where user1_id=$1 or user2_id=$1", [
-          userId,
-        ])
+        await db.query(
+          `SELECT 
+              chat.chat_id,
+              chat.user1_id,
+              chat.user2_id,
+              w1.wallet AS wallet_1,
+              w2.wallet AS wallet_2,
+              chat.last_message_id
+            FROM 
+                chat
+            JOIN 
+                users u1 ON chat.user1_id = u1.id
+            JOIN 
+                wallets w1 ON u1.wallet_id = w1.id
+            JOIN 
+                users u2 ON chat.user2_id = u2.id
+            JOIN 
+                wallets w2 ON u2.wallet_id = w2.id
+            WHERE 
+                u1.id = $1 or u2.id = $1`,
+          [userId]
+        )
       ).rows;
 
       const lastMessages: IChatResponse[] = [];
@@ -74,15 +93,8 @@ class ChatService {
     return await db.transact(async () => {
       return (
         await db.query(
-          "INSERT INTO chat(chat_id, user1_id, wallet_1, user2_id, wallet_2, last_message_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-          [
-            body.chat_id,
-            body.user1_id,
-            body.wallet_1,
-            body.user2_id,
-            body.wallet_2,
-            body.last_message_id,
-          ]
+          "INSERT INTO chat(chat_id, user1_id, user2_id, last_message_id) VALUES ($1, $2, $3, $4) RETURNING *",
+          [body.chat_id, body.user1_id, body.user2_id, body.last_message_id]
         )
       ).rows[0];
     });
