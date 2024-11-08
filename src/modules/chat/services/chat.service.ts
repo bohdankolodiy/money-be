@@ -8,32 +8,40 @@ import {
 } from "../../../interfaces/chat.interface";
 
 class ChatService {
+  async getChats(
+    db: PostgresDb,
+    id: string,
+    isChat: boolean = false
+  ): Promise<IChat[]> {
+    return (
+      await db.query(
+        `SELECT 
+          chat.chat_id,
+          chat.user1_id,
+          chat.user2_id,
+          w1.wallet AS wallet_1,
+          w2.wallet AS wallet_2,
+          chat.last_message_id
+        FROM 
+            chat
+        JOIN 
+            users u1 ON chat.user1_id = u1.id
+        JOIN 
+            wallets w1 ON u1.wallet_id = w1.id
+        JOIN 
+            users u2 ON chat.user2_id = u2.id
+        JOIN 
+            wallets w2 ON u2.wallet_id = w2.id
+        WHERE 
+            ${isChat ? "chat.chat_id = $1" : "u1.id = $1 or u2.id = $1"}`,
+        [id]
+      )
+    ).rows;
+  }
+
   async getUserChats(db: PostgresDb, userId: string): Promise<IChatResponse[]> {
     return await db.transact(async () => {
-      const chats = (
-        await db.query(
-          `SELECT 
-              chat.chat_id,
-              chat.user1_id,
-              chat.user2_id,
-              w1.wallet AS wallet_1,
-              w2.wallet AS wallet_2,
-              chat.last_message_id
-            FROM 
-                chat
-            JOIN 
-                users u1 ON chat.user1_id = u1.id
-            JOIN 
-                wallets w1 ON u1.wallet_id = w1.id
-            JOIN 
-                users u2 ON chat.user2_id = u2.id
-            JOIN 
-                wallets w2 ON u2.wallet_id = w2.id
-            WHERE 
-                u1.id = $1 or u2.id = $1`,
-          [userId]
-        )
-      ).rows;
+      const chats = await this.getChats(db, userId);
 
       const lastMessages: IChatResponse[] = [];
       for (let i = 0; i < chats.length; i++) {
@@ -108,12 +116,14 @@ class ChatService {
 
   async createChat(db: PostgresDb, body: IChat): Promise<IChat> {
     return await db.transact(async () => {
-      return (
+      const createdChat: IChat = (
         await db.query(
           "INSERT INTO chat(chat_id, user1_id, user2_id, last_message_id) VALUES ($1, $2, $3, $4) RETURNING *",
           [body.chat_id, body.user1_id, body.user2_id, body.last_message_id]
         )
       ).rows[0];
+
+      return (await this.getChats(db, createdChat.chat_id, true))[0];
     });
   }
 
