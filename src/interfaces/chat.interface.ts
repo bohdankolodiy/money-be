@@ -30,3 +30,8 @@ export interface IMessagesReply {
   date: string;
   messages: IMessages[];
 }
+
+export interface IChatMessages {
+  chat_messages: IMessagesReply[];
+  last_page: number;
+}

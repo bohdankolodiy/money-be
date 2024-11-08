@@ -1,6 +1,7 @@
 import { PostgresDb } from "@fastify/postgres";
 import {
   IChat,
+  IChatMessages,
   IChatResponse,
   IMessages,
   IMessagesReply,
@@ -59,33 +60,49 @@ class ChatService {
 
   async getUserChatMessage(
     db: PostgresDb,
-    chat_id: string
-  ): Promise<IMessagesReply[]> {
-    return await db.transact(async () => {
-      const messages: IMessages[] = (
-        await db.query("Select * from messages where chat_id=$1", [chat_id])
-      ).rows.sort(
-        (a, b) =>
-          new Date(a.send_date).getDate() - new Date(b.send_date).getDate()
-      );
-
-      const send_dates: Array<{ date: string }> = (
+    chat_id: string,
+    page: number = 0,
+    limit: number = 10
+  ): Promise<IChatMessages> {
+    return db.transact(async () => {
+      const chat_messages: IMessagesReply[] = (
         await db.query(
-          "SELECT DISTINCT DATE_TRUNC('day', send_date::TIMESTAMP) as date from messages where chat_id = $1  ORDER BY date",
-          [chat_id]
+          `SELECT 
+            CAST(DATE_TRUNC('day', send_date::TIMESTAMP) AS VARCHAR) AS date,
+            ARRAY_AGG(jsonb_build_object(
+                'message_id', message_id,
+                'chat_id', chat_id,
+                'sender_id', sender_id,
+                'text', text,
+                'send_date', send_date
+            ) ORDER BY send_date) AS messages
+        FROM (
+            SELECT *
+            FROM 
+                messages
+            WHERE 
+                chat_id = $1
+            ORDER BY DATE_TRUNC('month', send_date::TIMESTAMP) desc, send_date desc    
+            LIMIT $2 OFFSET $3
+        )
+        GROUP BY 
+            date
+        ORDER BY 
+            date;`,
+          [chat_id, limit, page * limit]
         )
       ).rows;
 
-      const mappedMessages: IMessagesReply[] = send_dates.map((res) => ({
-        date: res.date,
-        messages: messages.filter(
-          (item: IMessages) =>
-            new Date(item?.send_date).setHours(0, 0, 0, 0) ===
-            new Date(res.date).getTime()
-        ),
-      }));
+      const { last_page } = (
+        await db.query(
+          `SELECT CEIL(COUNT(message_id)/10.0) as last_page FROM messages`
+        )
+      ).rows[0];
 
-      return mappedMessages;
+      return {
+        last_page,
+        chat_messages,
+      };
     });
   }
 
