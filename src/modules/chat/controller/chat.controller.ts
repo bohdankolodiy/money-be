@@ -5,6 +5,7 @@ import { ChatModel, MessageModel } from "../../../models/chat.model";
 import { CreateChatType, MessageType, ParamsType } from "../schema/chat.schema";
 import { userService } from "../../user/services/user.service";
 import { emitter } from "../../../emitter/chat-emitter";
+import { IChatMessages } from "../../../interfaces/chat.interface";
 
 class ChatController {
   async getAllChats(req: FastifyRequest, reply: FastifyReply) {
@@ -20,12 +21,17 @@ class ChatController {
   }
 
   async getMessagesByChatId(
-    req: FastifyRequest<{ Params: ParamsType }>,
+    req: FastifyRequest<{ Params: ParamsType; Querystring: { page: number } }>,
     reply: FastifyReply
   ) {
     try {
       const chat_id = req.params.id;
-      const messages = await chatService.getUserChatMessage(req.db, chat_id);
+      const { page } = req.query;
+      const messages: IChatMessages = await chatService.getUserChatMessage(
+        req.db,
+        chat_id,
+        page
+      );
       return reply.code(200).send(messages);
     } catch (e) {
       return reply.code(500).send(e);

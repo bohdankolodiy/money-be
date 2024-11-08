@@ -147,14 +147,14 @@ INSERT INTO
         chat_id,
         user1_id,
         user2_id,
-        last_message_id,
+        last_message_id
     )
 VALUES
     (
         'fclxkngk5xi6oysbjfso',
         '3p1ckdk20tsr5nhozu45',
         'k7oilq4nabo6d58pbo1y',
-        'bw8h3cj6okkp0f2sarxi',
+        'bw8h3cj6okkp0f2sarxi'
     );
 
 INSERT INTO
