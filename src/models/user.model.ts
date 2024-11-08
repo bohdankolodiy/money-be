@@ -1,8 +1,8 @@
 import { IUser } from "../interfaces/user.interface";
-import generateUniqueId from "generate-unique-id";
+import { v7 as uuidv7 } from "uuid";
 
 export class User implements IUser {
-  id = generateUniqueId();
+  id = uuidv7();
   password: string;
   email: string;
   wallet_id: string;

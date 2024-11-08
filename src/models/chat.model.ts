@@ -1,8 +1,8 @@
 import { IChat, IMessages } from "../interfaces/chat.interface";
-import generateUniqueId from "generate-unique-id";
+import { v7 as uuidv7 } from "uuid";
 
 export class ChatModel implements IChat {
-  chat_id = generateUniqueId();
+  chat_id = uuidv7();
   user1_id: string;
   user2_id: string;
   last_message_id: string | null = null;
@@ -14,7 +14,7 @@ export class ChatModel implements IChat {
 }
 
 export class MessageModel implements IMessages {
-  message_id = generateUniqueId();
+  message_id = uuidv7();
   text: string;
   send_date: string = new Date().toLocaleString();
   chat_id: string;
