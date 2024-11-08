@@ -1,4 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
+import { ErrorResponseSchema } from "../../../shared/schemas/error-response.schema";
 
 export const UserAuthBodyObject = Type.Object({
   password: Type.String(),
@@ -47,6 +48,10 @@ export const userRegisterSchema = {
     body: UserAuthBodyObject,
     response: {
       201: UserDefaultObject,
+      401: ErrorResponseSchema,
+      400: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -56,6 +61,10 @@ export const userLoginSchema = {
     body: UserAuthBodyObject,
     response: {
       200: UserTokenObject,
+      401: ErrorResponseSchema,
+      400: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -65,6 +74,10 @@ export const userVerifySchema = {
     body: UserIdBodyObject,
     response: {
       200: UserDefaultObject,
+      401: ErrorResponseSchema,
+      400: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -74,6 +87,10 @@ export const forgetPasswordSchema = {
     body: ForgetPasswordBodyObject,
     response: {
       200: UserDefaultObject,
+      401: ErrorResponseSchema,
+      400: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -83,6 +100,10 @@ export const resetPasswordSchema = {
     body: ResetPasswordBodyObject,
     response: {
       200: UserDefaultObject,
+      401: ErrorResponseSchema,
+      400: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -91,6 +112,10 @@ export const deleteSchema = {
   schema: {
     response: {
       204: Type.Any(),
+      401: ErrorResponseSchema,
+      400: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };

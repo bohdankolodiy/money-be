@@ -29,7 +29,9 @@ class AuthController {
       );
 
       if (isExist) {
-        return reply.code(401).send({
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "User exist",
           message: "User already exist. Please login or verify you email!!!",
         });
       }
@@ -41,16 +43,20 @@ class AuthController {
       const userId = (await authService.createUser(req.db!, user))?.id;
 
       if (!userId) {
-        return reply
-          .code(500)
-          .send({ message: "Smth went wrong... User wasnot created" });
+        return reply.code(500).send({
+          statusCode: 500,
+          error: "Interval server error",
+          message: "Smth went wrong... User wasnot created",
+        });
       }
 
       await authService.sendMail(req.mailer, user, MailTypes.verification);
 
       return reply.code(201).send({ message: "success" });
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -66,17 +72,21 @@ class AuthController {
       const user: IUser = await authService.findOne(req.db, email);
 
       if (!user)
-        return reply.code(401).send({ message: "Invalid email or password" });
+        return reply.code(400).send({ message: "Invalid email or password" });
 
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch)
-        return reply.code(401).send({
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "Input error",
           message: "Invalid email or password",
         });
 
       if (!user.is_verify)
-        return reply.code(401).send({
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "Input error",
           message: "Verify you email",
         });
 
@@ -84,7 +94,9 @@ class AuthController {
 
       return reply.code(201).send({ accessToken: token });
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -101,7 +113,9 @@ class AuthController {
 
       return reply.code(201).send({ message: "success" });
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -115,7 +129,12 @@ class AuthController {
       const { email } = req.body;
 
       const user = await authService.findOne(req.db, email);
-      if (!user) return reply.code(400).send({ message: "User not found" });
+      if (!user)
+        return reply.code(404).send({
+          statusCode: 404,
+          error: "Input error",
+          message: "User not found",
+        });
 
       const token = authController.signToken(req, user);
       await authService.sendMail(
@@ -127,7 +146,9 @@ class AuthController {
 
       return reply.code(201).send({ message: "success" });
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -140,10 +161,19 @@ class AuthController {
     try {
       const { token, password } = req.body;
 
-      if (!token) return reply.code(400).send({ message: "Token is required" });
+      if (!token)
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "Input error",
+          message: "Token is required",
+        });
 
       if (!req.jwt.verify(token))
-        return reply.code(400).send({ message: "Wrong token" });
+        return reply.code(401).send({
+          statusCode: 401,
+          error: "Invalid token",
+          message: "Wrong token",
+        });
 
       const userId: string = await userService.getUserId(req, token);
 
@@ -154,7 +184,9 @@ class AuthController {
 
       return reply.code(201).send({ message: "success" });
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -165,11 +197,18 @@ class AuthController {
   async delettAccount(req: FastifyRequest, reply: FastifyReply) {
     try {
       const user = await userService.getUserId(req);
-      if (!user) return reply.code(400).send("User not found");
+      if (!user)
+        return reply.code(404).send({
+          statusCode: 404,
+          error: "User error",
+          messages: "User not found",
+        });
       await authService.deleteAccount(req.db, user);
       reply.code(204).send();
     } catch (e) {
-      reply.code(500).send({ message: e });
+      reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 

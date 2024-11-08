@@ -16,7 +16,9 @@ class ChatController {
       );
       return reply.code(200).send(chats);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -34,7 +36,9 @@ class ChatController {
       );
       return reply.code(200).send(messages);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -54,7 +58,9 @@ class ChatController {
 
       return reply.code(201).send(chat);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -73,7 +79,9 @@ class ChatController {
       await chatService.createMessage(req.db, newMessage);
       return reply.code(201).send(newMessage);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -86,7 +94,9 @@ class ChatController {
       await chatService.deleteChat(req.db, id);
       return reply.code(204).send();
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 }

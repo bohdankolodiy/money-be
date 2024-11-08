@@ -18,7 +18,9 @@ class HistoryController {
 
       return reply.code(200).send(history);
     } catch (e) {
-      return reply.code(500).send({ message: "smth went wrong" });
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -33,7 +35,9 @@ class HistoryController {
 
       return reply.code(200).send(history);
     } catch (e) {
-      return reply.code(500).send({ message: "smth went wrong" });
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 }

@@ -12,7 +12,9 @@ class UserController {
 
       return reply.code(200).send(user);
     } catch (e) {
-      return reply.code(500).send({ message: e });
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -24,7 +26,9 @@ class UserController {
       );
       return reply.code(200).send(users);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -34,7 +38,9 @@ class UserController {
 
       return reply.code(200).send(users);
     } catch (e) {
-      return reply.code(500).send({ message: e });
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 }

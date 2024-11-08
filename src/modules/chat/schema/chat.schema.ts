@@ -1,4 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
+import { ErrorResponseSchema } from "../../../shared/schemas/error-response.schema";
 
 export const MessageObject = Type.Object({
   message_id: Type.String(),
@@ -62,6 +63,9 @@ export const ChatSchema = {
   schema: {
     response: {
       200: ChatResponseObject,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -71,6 +75,9 @@ export const CreateChatSchema = {
     body: ChatBobyObject,
     response: {
       201: ChatObject,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -86,6 +93,9 @@ export const DeleteChatSchema = {
     },
     response: {
       204: Type.Null(),
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -108,6 +118,9 @@ export const MessageSchema = {
     },
     response: {
       200: ChatMessageResponseObject,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -117,6 +130,9 @@ export const AddMessageSchema = {
     body: MessageBobyObject,
     response: {
       201: MessageObject,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
