@@ -1,8 +1,8 @@
 import { ITransactHistory } from "../interfaces/history.interface";
-import generateUniqueId from "generate-unique-id";
+import { v7 as uuidv7 } from "uuid";
 
 export class History implements ITransactHistory {
-  id = generateUniqueId();
+  id = uuidv7();
   amount: number;
   action: string;
   wallet_id: string;

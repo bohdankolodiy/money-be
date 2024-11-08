@@ -1,4 +1,5 @@
 import { Type } from "@sinclair/typebox";
+import { ErrorResponseSchema } from "../../../shared/schemas/error-response.schema";
 
 export const UserObject = Type.Object({
   id: Type.String(),
@@ -18,6 +19,8 @@ export const getUserSchema = {
   schema: {
     response: {
       200: UserObject,
+      401: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -26,6 +29,9 @@ export const getUsersSchema = {
   schema: {
     response: {
       200: UsersArray,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -34,6 +40,9 @@ export const getUsersForChatSchema = {
   schema: {
     response: {
       200: UsersForChatArray,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };

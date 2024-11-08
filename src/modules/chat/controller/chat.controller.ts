@@ -2,9 +2,10 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { chatService } from "../services/chat.service";
 import { IUser } from "../../../interfaces/user.interface";
 import { ChatModel, MessageModel } from "../../../models/chat.model";
-import { CreateChatType, MessageType } from "../schema/chat.schema";
+import { CreateChatType, MessageType, ParamsType } from "../schema/chat.schema";
 import { userService } from "../../user/services/user.service";
 import { emitter } from "../../../emitter/chat-emitter";
+import { IChatMessages } from "../../../interfaces/chat.interface";
 
 class ChatController {
   async getAllChats(req: FastifyRequest, reply: FastifyReply) {
@@ -15,19 +16,29 @@ class ChatController {
       );
       return reply.code(200).send(chats);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
-  async getMessagesByChatId(req: FastifyRequest, reply: FastifyReply) {
+  async getMessagesByChatId(
+    req: FastifyRequest<{ Params: ParamsType; Querystring: { page: number } }>,
+    reply: FastifyReply
+  ) {
     try {
-      const chat_id = (req.params as { id: string }).id;
-      if (!chat_id)
-        return reply.code(400).send("Please, provide correct chat_id");
-      const messages = await chatService.getUserChatMessage(req.db, chat_id);
+      const chat_id = req.params.id;
+      const { page } = req.query;
+      const messages: IChatMessages = await chatService.getUserChatMessage(
+        req.db,
+        chat_id,
+        page
+      );
       return reply.code(200).send(messages);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -47,7 +58,9 @@ class ChatController {
 
       return reply.code(201).send(chat);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -66,20 +79,24 @@ class ChatController {
       await chatService.createMessage(req.db, newMessage);
       return reply.code(201).send(newMessage);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
-  async deleteChat(req: FastifyRequest, reply: FastifyReply) {
+  async deleteChat(
+    req: FastifyRequest<{ Params: ParamsType }>,
+    reply: FastifyReply
+  ) {
     try {
-      const { id } = req.params as { id: string };
-
-      if (!id) return reply.code(400).send("Please, provide correct userId");
-
+      const { id } = req.params;
       await chatService.deleteChat(req.db, id);
       return reply.code(204).send();
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 }

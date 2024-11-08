@@ -1,4 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
+import { ErrorResponseSchema } from "../../../shared/schemas/error-response.schema";
 
 export const HistoryObject = Type.Object({
   id: Type.String(),
@@ -25,12 +26,45 @@ export const HistoryBodyObject = Type.Object({
   id: Type.String(),
 });
 
-export type HistoryRequestType = Static<typeof HistoryBodyObject>;
+export const ParamsObject = Type.Object({
+  id: Type.String(),
+});
 
-export const allHistorySchema = {
+export type HistoryRequestType = Static<typeof HistoryBodyObject>;
+export type ParamsType = Static<typeof ParamsObject>;
+
+export const UserHistorySchema = {
   schema: {
+    params: {
+      type: "object",
+      required: ["id"],
+      properties: {
+        id: { type: "string" },
+      },
+    },
     response: {
       200: HistoryResponseArray,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
+    },
+  },
+};
+
+export const SearchHistorySchema = {
+  schema: {
+    querystring: {
+      type: "object",
+      required: ["id"],
+      properties: {
+        id: { type: "string" },
+      },
+    },
+    response: {
+      200: Type.Array(HistoryObject),
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };

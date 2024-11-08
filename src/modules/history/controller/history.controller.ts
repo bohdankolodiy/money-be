@@ -1,13 +1,15 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { historyService } from "../services/history.service";
 import { ITransactHistory } from "../../../interfaces/history.interface";
+import { ParamsType } from "../schema/history.schema";
 
 class HistoryController {
-  async getHistory(req: FastifyRequest, reply: FastifyReply) {
+  async getHistory(
+    req: FastifyRequest<{ Querystring: ParamsType }>,
+    reply: FastifyReply
+  ) {
     try {
-      const historyId = (req.query as { id: string }).id;
-
-      if (!historyId) return reply.code(400).send("Please, provide correct id");
+      const historyId = req.query.id;
 
       const history: ITransactHistory[] = await historyService.getAllHistory(
         req.db,
@@ -16,21 +18,26 @@ class HistoryController {
 
       return reply.code(200).send(history);
     } catch (e) {
-      return reply.code(500).send({ message: "smth went wrong" });
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
-  async getUserHistory(req: FastifyRequest, reply: FastifyReply) {
+  async getUserHistory(
+    req: FastifyRequest<{ Params: ParamsType }>,
+    reply: FastifyReply
+  ) {
     try {
-      const wallet_id = (req.params as { id: string }).id;
-
-      if (!wallet_id) return reply.code(400).send("Please, provide correct id");
+      const wallet_id = req.params.id;
 
       const history = await historyService.getUserHistory(req.db, wallet_id);
 
       return reply.code(200).send(history);
     } catch (e) {
-      return reply.code(500).send({ message: "smth went wrong" });
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 }

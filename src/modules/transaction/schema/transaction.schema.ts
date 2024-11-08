@@ -1,4 +1,5 @@
 import { Static, Type } from "@sinclair/typebox";
+import { ErrorResponseSchema } from "../../../shared/schemas/error-response.schema";
 
 export const TransactBodyObject = Type.Object({
   wallet: Type.String(),
@@ -25,6 +26,10 @@ export const transactMoneySchema = {
     body: TransactBodyObject,
     response: {
       201: TransactResponseSchema,
+      400: ErrorResponseSchema,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };
@@ -34,6 +39,9 @@ export const updatePaymentStatusSchema = {
     body: updateStatusSchema,
     response: {
       200: TransactResponseSchema,
+      401: ErrorResponseSchema,
+      404: ErrorResponseSchema,
+      500: ErrorResponseSchema,
     },
   },
 };

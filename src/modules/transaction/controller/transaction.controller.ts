@@ -23,21 +23,30 @@ class TransactionController {
       );
 
       if (wallet_reciever.id === wallet_sender.id)
-        return reply
-          .code(403)
-          .send({ message: "You cant send money to yourserlf" });
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "Wrong sender",
+          message: "You cant send money to yourserlf",
+        });
 
       const error = transactionService.checkValidation(
         wallet_sender.balance,
         amount,
         wallet
       );
-      if (error) return reply.code(400).send({ message: error });
+      if (error)
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "Input error",
+          message: error,
+        });
 
       if (!wallet_reciever)
-        return reply
-          .code(400)
-          .send({ message: "No reciever with that wallet" });
+        return reply.code(404).send({
+          statusCode: 404,
+          error: "User not found",
+          message: "No reciever with that wallet",
+        });
 
       const userInfo: Omit<IInfo, "amount"> =
         transactionService.generateTransactionInfo(
@@ -67,7 +76,9 @@ class TransactionController {
         balance: wallet_sender.balance,
       });
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -84,7 +95,11 @@ class TransactionController {
       const wallet_reciever = await transactionService.getAuthUserWalletId(req);
 
       if (!wallet_sender)
-        return reply.code(400).send({ message: "No reciever with that id" });
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "User not found",
+          message: "No reciever with that id",
+        });
 
       let recieverNewBalance = wallet_reciever!.balance;
 
@@ -129,7 +144,9 @@ class TransactionController {
         balance: recieverInfo.amount,
       });
     } catch (e) {
-      return reply.code(500).send({ message: e });
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 }

@@ -12,7 +12,9 @@ class WalletController {
       const wallet = await walletService.getAuthUserWalletId(req);
       return reply.code(200).send(wallet);
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -31,7 +33,12 @@ class WalletController {
         card,
         false
       );
-      if (error) return reply.code(400).send({ message: error });
+      if (error)
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "Wrong Input",
+          message: error,
+        });
 
       const newUserAmount = wallet!.balance + amount;
 
@@ -49,7 +56,9 @@ class WalletController {
         balance: newUserAmount,
       });
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 
@@ -63,7 +72,12 @@ class WalletController {
       const wallet = await walletService.getAuthUserWalletId(req);
 
       const error = walletService.checkValidation(wallet.balance, amount, card);
-      if (error) return reply.code(400).send({ message: error });
+      if (error)
+        return reply.code(400).send({
+          statusCode: 400,
+          error: "Wrong Input",
+          message: error,
+        });
 
       const newUserAmount = wallet!.balance - amount;
 
@@ -81,7 +95,9 @@ class WalletController {
         balance: newUserAmount,
       });
     } catch (e) {
-      return reply.code(500).send(e);
+      return reply
+        .code(500)
+        .send({ statusCode: 500, error: "Interval server error", message: e });
     }
   }
 }
